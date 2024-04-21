@@ -1,5 +1,6 @@
 package com.teller.tellapp.ui
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -45,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -64,7 +66,6 @@ import java.util.Date
 import java.util.Locale
 
 
-
 @Composable
 fun HomeScreen(navController: NavController, openDrawer: () -> Unit)
  {
@@ -75,12 +76,14 @@ fun HomeScreen(navController: NavController, openDrawer: () -> Unit)
             .fillMaxSize()
     ) {
 
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Top
         ) {
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -96,6 +99,8 @@ fun HomeScreen(navController: NavController, openDrawer: () -> Unit)
                         .padding(16.dp)
                 )
 
+//                ModalDrawerSample(navController = navController)
+
                 // Bank Logo
                 BankLogo()
 
@@ -104,7 +109,20 @@ fun HomeScreen(navController: NavController, openDrawer: () -> Unit)
 
                 // Date and Time
                 DateAndTime()
+
             }
+
+            val context = LocalContext.current
+
+            LogoutButton(
+                logout = {
+                    logout(context, navController)
+                    // Implement logout functionality here
+                    // For example, call logout function or clear user session
+                },
+                navController = navController
+            )
+
             TopButtons(navController = navController)
 
             Spacer(modifier = Modifier.height(0.dp))
@@ -135,7 +153,7 @@ fun HomeScreen(navController: NavController, openDrawer: () -> Unit)
 @Composable
 fun BankLogo() {
     val logoResource = if (isSystemInDarkTheme()) {
-        R.drawable.eqtydarkbg // Change this to the appropriate dark mode image resource
+        R.drawable.equityjpg2 // Change this to the appropriate dark mode image resource
     } else {
         R.drawable.equityb // Default image resource for light mode
     }
@@ -146,7 +164,7 @@ fun BankLogo() {
         modifier = Modifier
             .padding(start = 0.dp)
             .padding(0.dp)
-            .size(80.dp)
+            .size(70.dp)
     )
 }
 
@@ -168,6 +186,7 @@ fun DateAndTime() {
     )
 }
 
+
 @Composable
 fun getCurrentTime(): String {
     val currentTime = remember { mutableStateOf("") }
@@ -183,6 +202,63 @@ fun getCurrentTime(): String {
 
     return currentTime.value
 }
+
+@Composable
+fun LogoutButton(logout: () -> Unit, navController: NavController) {
+    val scope = rememberCoroutineScope()
+    val textColor = if (isSystemInDarkTheme()) {
+        Color.White
+    } else {
+        Color.Black
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End, // Align horizontally to the end
+        modifier = Modifier.padding(end = 10.dp, start = 320.dp) // Add padding to the end
+    ) {
+        // Logout Text
+        Text(
+            text = "Logout",
+            color = textColor,
+            fontWeight = FontWeight.Bold,
+            fontSize = 15.sp,
+            modifier = Modifier.padding(end = 10.dp)
+        )
+
+        // Logout Icon
+        Image(
+            painter = painterResource(id = R.drawable.logout),
+            contentDescription = "Logout Icon",
+            modifier = Modifier
+                .size(30.dp) // Set the size of the image
+                .clickable {
+                    logout()
+                    scope.launch {
+                        navController.navigate(Route.LoginScreen().name) // Replace with your login screen route
+                    }
+                }
+        )
+    }
+}
+
+// Example implementation of logout function
+fun logout(context: Context, navController: NavController) {
+    val sharedPreferences = context.getSharedPreferences("my_app_pref", Context.MODE_PRIVATE)
+    sharedPreferences.edit().clear().apply()
+
+    // Clear the back stack and navigate to the login screen with a new task
+    navController.navigate(Route.LoginScreen().name) {
+        popUpTo(navController.graph.startDestinationId) {
+            // Inclusive will clear the start destination as well
+            inclusive = true
+        }
+        launchSingleTop = true
+        restoreState = true
+    }
+}
+
+
 
 
 @Composable
@@ -520,7 +596,7 @@ fun ButtonsTrans(navController: NavController) {
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Button(
-            onClick = { navController.navigate(Route.TicketsScreen().name) },
+            onClick = { navController.navigate(Route.TellerDetailsScreen().name) },
             colors = buttonColors,
             modifier = Modifier
                 .width(120.dp) // Increase button width

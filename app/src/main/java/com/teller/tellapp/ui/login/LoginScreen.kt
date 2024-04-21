@@ -1,5 +1,6 @@
 package com.teller.tellapp.ui.login
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -12,9 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
@@ -36,18 +35,28 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.teller.tellapp.R
-import com.teller.tellapp.ui.components.HeaderText
+import com.teller.tellapp.Route
+import com.teller.tellapp.User
+import com.teller.tellapp.network.EntityResponse
+import com.teller.tellapp.network.RetrofitClient
 import com.teller.tellapp.ui.components.LoginTextField
 import com.teller.tellapp.ui.theme.TellAppTheme
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 val defaultPadding = 16.dp
 val itemSpacing = 5.dp
 
 @Composable
-fun LoginScreen(onLoginClick: () -> Unit, onSignUpClick: () -> Unit,
-                onForgotPasswordClick: () -> Unit, navController: NavHostController
+fun LoginScreen(onLoginClick: () -> Unit,
+                onSignUpClick: () -> Unit,
+                onForgotPasswordClick: () -> Unit,
+                navController: NavHostController
 ) {
+
+    val apiService = RetrofitClient.instance
 
     val (userName, setUsername) = rememberSaveable {
         mutableStateOf("")
@@ -60,11 +69,14 @@ fun LoginScreen(onLoginClick: () -> Unit, onSignUpClick: () -> Unit,
     }
     val isFieldsEmpty = userName.isNotEmpty() && password.isNotEmpty()
 
+//    val isFieldsEmpty = userName.isNotBlank() && password.isNotBlank()
+
+
     val context = LocalContext.current
 
 
     val logoResource = if (isSystemInDarkTheme()) {
-        R.drawable.eqtydarkbg // Change this to the appropriate dark mode image resource
+        R.drawable.equityjpg2 // Change this to the appropriate dark mode image resource
     } else {
         R.drawable.equityb // Default image resource for light mode
     }
@@ -90,29 +102,34 @@ fun LoginScreen(onLoginClick: () -> Unit, onSignUpClick: () -> Unit,
 
         Spacer(modifier = Modifier.height(itemSpacing))
 
-        HeaderText(
+        Text(
             text = "Teller Automation",
             modifier = Modifier.padding(vertical = defaultPadding),
-//            style = TextStyle(fontSize = 14.sp)
+            style = MaterialTheme.typography.h5 // or any other suitable body text style
         )
+
         Spacer(modifier = Modifier.height(30.dp))
         LoginTextField(
             value = userName,
             onValueChange = setUsername,
             labelText = "Username",
-            leadingIcon = Icons.Default.Person,
+            leadingIcon = R.drawable.person_25,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(itemSpacing))
+
+
         LoginTextField(
             value = password,
-            onValueChange = setPassword,
+            onValueChange = setPassword, // Use setPassword instead of { password = it }
             labelText = "Password",
-            leadingIcon = Icons.Default.Lock,
+            leadingIcon = R.drawable.lock_25,
             modifier = Modifier.fillMaxWidth(),
             keyboardType = KeyboardType.Password,
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            showPasswordToggle = true,
         )
+
         Spacer(Modifier.height(itemSpacing))
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -130,8 +147,43 @@ fun LoginScreen(onLoginClick: () -> Unit, onSignUpClick: () -> Unit,
             }
         }
         Spacer(Modifier.height(itemSpacing))
+
+
+
+        // Function to handle login
+        fun performLogin() {
+            val loginRequest = User(username = userName, password = password)
+            apiService.login(loginRequest).enqueue(object : Callback<EntityResponse<User>> {
+                override fun onResponse(
+                    call: Call<EntityResponse<User>>,
+                    response: Response<EntityResponse<User>>
+                ) {
+                    if (response.isSuccessful) {
+                        val entityResponse = response.body()
+                        if (entityResponse != null) {
+                            // Handle successful login response
+                            // For example, you might save user data to shared preferences
+                            navController.navigate(Route.HomeScreen().name)
+                        } else {
+                            Log.d("Login", "Null response body")
+                            // Handle null response body
+                        }
+                    } else {
+                        Log.d("Login", "Unsuccessful login response: ${response.code()}")
+                        // Handle unsuccessful login response
+                    }
+                }
+
+                override fun onFailure(call: Call<EntityResponse<User>>, t: Throwable) {
+                    Log.e("Login", "Network failure: ${t.message}", t)
+                    // Handle network failure
+                }
+            })
+        }
+
+
         Button(
-            onClick = onLoginClick,
+            onClick = { performLogin() },
             modifier = Modifier.fillMaxWidth(),
             enabled = isFieldsEmpty
         ) {
@@ -142,6 +194,8 @@ fun LoginScreen(onLoginClick: () -> Unit, onSignUpClick: () -> Unit,
                 fontWeight = FontWeight.Bold
             )
         }
+
+
         Spacer(modifier = Modifier.height(20.dp))
         Row(
             horizontalArrangement = Arrangement.Center,

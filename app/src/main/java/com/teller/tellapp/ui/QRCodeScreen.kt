@@ -17,6 +17,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
@@ -39,15 +43,27 @@ import com.google.zxing.DecodeHintType
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.PlanarYUVLuminanceSource
 import com.google.zxing.common.HybridBinarizer
+import com.teller.tellapp.Route
 import java.nio.ByteBuffer
 
 @Composable
 fun QRCodeScanner(
-    navController: NavController
+    navController: NavController,
+    onQrCodeSubmit: (String) -> Unit,
+    onCancel: () -> Unit
 ) {
     // State to hold the scanned QR code
     var code by remember {
         mutableStateOf("")
+    }
+
+    val buttonColors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
+    var scannedData by remember { mutableStateOf("") }
+
+
+    // State to track whether the QR code is scanned
+    var qrCodeScanned by remember {
+        mutableStateOf(false)
     }
 
     // Accessing context and lifecycle owner from Compose
@@ -105,6 +121,8 @@ fun QRCodeScanner(
                         ContextCompat.getMainExecutor(context),
                         QrCodeAnalyzer { result ->
                             code = result
+                            qrCodeScanned =
+                                true // Set qrCodeScanned to true when a QR code is scanned
                         }
                     )
                     // Bind camera lifecycle
@@ -132,60 +150,133 @@ fun QRCodeScanner(
                     .fillMaxWidth()
                     .padding(32.dp)
             )
+
+            // Inside the QRCodeScanner composable
+// Trigger navigation to EditScannedDataScreen when a QR code is scanned
+//            if (qrCodeScanned) {
+//                LaunchedEffect(key1 = qrCodeScanned) {
+//                    // Navigate to the EditScannedDataScreen and pass scanned data directly
+//                    navController.navigate(
+//                        Route.EditScannedDataScreen().name
+//                            .replace("{qrCode}", code)
+//                    )
+//                }
+//            }
+
+
+
+//            LaunchedEffect(key1 = qrCodeScanned) {
+//                if (qrCodeScanned) {
+//                    // Verify if LaunchedEffect is triggered
+//                    Log.d("Navigation", "LaunchedEffect triggered")
+//
+//                    // Navigate to the editing screen with the scanned data
+//                    val scannedData = code // Assuming 'code' holds the scanned data
+//                    navController.navigate(
+//                        Route.EditScannedDataScreen().name
+//                            .replace("{qrCode}", code)
+//                    )
+//                }
+//            }
+
+
+            // Inside the QRCodeScanner composable
+
+//             Display submit and cancel buttons if a QR code is scanned
+            if (qrCodeScanned) {
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            try {
+
+                                navController.navigate(
+                                    Route.EditScannedDataScreen().name
+                                        .replace("{qrCode}", code)
+                                )
+
+                                // Pass the scanned data to the EditScannedDataScreen
+//                                navController.navigate(
+//                                    Route.EditScannedDataScreen().name +
+//                                            "$code"
+//                                )
+
+
+                            } catch (e: Exception) {
+                                // Log or handle the exception
+                                e.printStackTrace()
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = buttonColors
+                    ) {
+                        Text("Submit")
+                    }
+                    Button(
+                        onClick = { onCancel() },
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = buttonColors
+                    ) {
+                        Text("Cancel")
+                    }
+                }
+            }
         }
     }
 }
 
-    class QrCodeAnalyzer(
-        private val onQrCodeScanned: (String) -> Unit
-    ): ImageAnalysis.Analyzer {
+class QrCodeAnalyzer(
+    private val onQrCodeScanned: (String) -> Unit
+) : ImageAnalysis.Analyzer {
 
-        private val supportedImageFormats = listOf(
-            ImageFormat.YUV_420_888,
-            ImageFormat.YUV_422_888,
-            ImageFormat.YUV_444_888,
-        )
+    private val supportedImageFormats = listOf(
+        ImageFormat.YUV_420_888,
+        ImageFormat.YUV_422_888,
+        ImageFormat.YUV_444_888,
+    )
 
-        override fun analyze(image: ImageProxy) {
-            if(image.format in supportedImageFormats) {
-                val bytes = image.planes.first().buffer.toByteArray()
-                val source = PlanarYUVLuminanceSource(
-                    bytes,
-                    image.width,
-                    image.height,
-                    0,
-                    0,
-                    image.width,
-                    image.height,
-                    false
-                )
-                val binaryBmp = BinaryBitmap(HybridBinarizer(source))
-                try {
-                    val result = MultiFormatReader().apply {
-                        setHints(
-                            mapOf(
-                                DecodeHintType.POSSIBLE_FORMATS to arrayListOf(
-                                    BarcodeFormat.QR_CODE
-                                )
+    override fun analyze(image: ImageProxy) {
+        if (image.format in supportedImageFormats) {
+            val bytes = image.planes.first().buffer.toByteArray()
+            val source = PlanarYUVLuminanceSource(
+                bytes,
+                image.width,
+                image.height,
+                0,
+                0,
+                image.width,
+                image.height,
+                false
+            )
+            val binaryBmp = BinaryBitmap(HybridBinarizer(source))
+            try {
+                val result = MultiFormatReader().apply {
+                    setHints(
+                        mapOf(
+                            DecodeHintType.POSSIBLE_FORMATS to arrayListOf(
+                                BarcodeFormat.QR_CODE
                             )
                         )
-                    }.decode(binaryBmp)
-                    onQrCodeScanned(result.text)
-                } catch(e: Exception) {
-                    e.printStackTrace()
-                } finally {
-                    image.close()
-                }
-            }
-        }
-
-        private fun ByteBuffer.toByteArray(): ByteArray {
-            rewind()
-            return ByteArray(remaining()).also {
-                get(it)
+                    )
+                }.decode(binaryBmp)
+                onQrCodeScanned(result.text)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                image.close()
             }
         }
     }
 
+    private fun ByteBuffer.toByteArray(): ByteArray {
+        rewind()
+        return ByteArray(remaining()).also {
+            get(it)
+        }
+    }
 
+}
 

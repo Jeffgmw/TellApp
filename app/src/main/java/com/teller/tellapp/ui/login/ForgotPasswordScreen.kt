@@ -43,7 +43,7 @@ fun ForgotPasswordPage(navController: NavController) {
 //    val textColor2 = LocalContentColor.current
 
     val logoResource = if (isSystemInDarkTheme()) {
-        R.drawable.eqtydarkbg // Change this to the appropriate dark mode image resource
+        R.drawable.equityjpg2 // Change this to the appropriate dark mode image resource
     } else {
         R.drawable.equityb // Default image resource for light mode
     }
