@@ -89,15 +89,15 @@ fun HomeScreen(navController: NavController, openDrawer: () -> Unit)
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = "Drawer Icon",
-                    modifier = Modifier
-                        .clickable {
-                            openDrawer() // Call the openDrawer callback to open the drawer
-                        }
-                        .padding(16.dp)
-                )
+//                Icon(
+//                    imageVector = Icons.Default.Menu,
+//                    contentDescription = "Drawer Icon",
+//                    modifier = Modifier
+//                        .clickable {
+//                            openDrawer() // Call the openDrawer callback to open the drawer
+//                        }
+//                        .padding(16.dp)
+//                )
 
 //                ModalDrawerSample(navController = navController)
 
@@ -162,7 +162,7 @@ fun BankLogo() {
         painter = painterResource(id = logoResource),
         contentDescription = "Bank Logo",
         modifier = Modifier
-            .padding(start = 0.dp)
+            .padding(start = 15.dp)
             .padding(0.dp)
             .size(70.dp)
     )

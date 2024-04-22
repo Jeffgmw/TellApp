@@ -13,12 +13,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -58,10 +61,10 @@ fun LoginScreen(onLoginClick: () -> Unit,
 
     val apiService = RetrofitClient.instance
 
-    val (userName, setUsername) = rememberSaveable {
+    var (userName, setUsername) = rememberSaveable {
         mutableStateOf("")
     }
-    val (password, setPassword) = rememberSaveable {
+    var (password, setPassword) = rememberSaveable {
         mutableStateOf("")
     }
     val (checked, onCheckedChange) = rememberSaveable {
@@ -71,24 +74,34 @@ fun LoginScreen(onLoginClick: () -> Unit,
 
 //    val isFieldsEmpty = userName.isNotBlank() && password.isNotBlank()
 
-
     val context = LocalContext.current
 
-
     val logoResource = if (isSystemInDarkTheme()) {
-        R.drawable.equityjpg2 // Change this to the appropriate dark mode image resource
+        R.drawable.equityjpg2
     } else {
-        R.drawable.equityb // Default image resource for light mode
+        R.drawable.equityb
     }
 
+    DisposableEffect(Unit) {
+        onDispose {
+            if (isFieldsEmpty) {
+                userName = ""
+                password = ""
+            }
+        }
+    }
 
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = defaultPadding, vertical = 70.dp),
+            .padding(horizontal = defaultPadding)
+        .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        Spacer(modifier = Modifier.height(70.dp))
+
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
@@ -149,7 +162,6 @@ fun LoginScreen(onLoginClick: () -> Unit,
         Spacer(Modifier.height(itemSpacing))
 
 
-
         // Function to handle login
         fun performLogin() {
             val loginRequest = User(username = userName, password = password)
@@ -162,7 +174,6 @@ fun LoginScreen(onLoginClick: () -> Unit,
                         val entityResponse = response.body()
                         if (entityResponse != null) {
                             // Handle successful login response
-                            // For example, you might save user data to shared preferences
                             navController.navigate(Route.HomeScreen().name)
                         } else {
                             Log.d("Login", "Null response body")
@@ -181,7 +192,6 @@ fun LoginScreen(onLoginClick: () -> Unit,
             })
         }
 
-
         Button(
             onClick = { performLogin() },
             modifier = Modifier.fillMaxWidth(),
@@ -194,7 +204,6 @@ fun LoginScreen(onLoginClick: () -> Unit,
                 fontWeight = FontWeight.Bold
             )
         }
-
 
         Spacer(modifier = Modifier.height(20.dp))
         Row(
@@ -211,7 +220,6 @@ fun LoginScreen(onLoginClick: () -> Unit,
     }
 }
 
-
 @Preview(showSystemUi = true)
 @Composable
 fun PrevLoginScreen() {
@@ -225,7 +233,5 @@ fun PrevLoginScreen() {
             onForgotPasswordClick = { /*TODO*/ },
             navController = navController
         )
-
-//        LoginScreen({}, {})
     }
 }
