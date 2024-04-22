@@ -39,7 +39,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.teller.tellapp.R
 import com.teller.tellapp.Route
-import com.teller.tellapp.User
+import com.teller.tellapp.data.User
 import com.teller.tellapp.network.EntityResponse
 import com.teller.tellapp.network.RetrofitClient
 import com.teller.tellapp.ui.components.LoginTextField

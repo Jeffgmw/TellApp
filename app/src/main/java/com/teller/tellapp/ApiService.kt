@@ -1,5 +1,7 @@
 package com.teller.tellapp
 
+import com.teller.tellapp.data.Teller
+import com.teller.tellapp.data.User
 import com.teller.tellapp.network.EntityResponse
 import retrofit2.Call
 import retrofit2.http.Body

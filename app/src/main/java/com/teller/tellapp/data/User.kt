@@ -1,4 +1,4 @@
-package com.teller.tellapp
+package com.teller.tellapp.data
 
 data class User(
     val password: String,
