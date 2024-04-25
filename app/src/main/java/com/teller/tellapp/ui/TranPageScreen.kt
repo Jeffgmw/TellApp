@@ -1,5 +1,4 @@
 package com.teller.tellapp.ui
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -349,7 +348,7 @@ fun WithdrawalPage(
                         onClick = { onSubmit(WithdrawalFormData(name, accountNumber, balance, amount, currency,
                             denominations, deditAmount, tranType, valueDate, creditAmount, creditCurrency, bankCode, tranDate, branchCode)) },
                         shape = RoundedCornerShape(10.dp),
-                                colors = buttonColors
+                        colors = buttonColors
                     ) {
                         Text("Submit")
                     }

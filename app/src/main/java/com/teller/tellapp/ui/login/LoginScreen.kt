@@ -14,12 +14,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Checkbox
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +44,6 @@ import com.teller.tellapp.Route
 import com.teller.tellapp.data.User
 import com.teller.tellapp.network.EntityResponse
 import com.teller.tellapp.network.RetrofitClient
-import com.teller.tellapp.ui.components.LoginTextField
 import com.teller.tellapp.ui.theme.TellAppTheme
 import retrofit2.Call
 import retrofit2.Callback
@@ -72,9 +73,16 @@ fun LoginScreen(onLoginClick: () -> Unit,
     }
     val isFieldsEmpty = userName.isNotEmpty() && password.isNotEmpty()
 
-//    val isFieldsEmpty = userName.isNotBlank() && password.isNotBlank()
-
     val context = LocalContext.current
+
+    val grayEq = Color(0xFFDBD4D4)
+    val maroon = Color(0xFFA42C2C)
+
+    val textColor = if (isSystemInDarkTheme()) {
+        Color.White
+    } else {
+        Color.Black
+    }
 
     val logoResource = if (isSystemInDarkTheme()) {
         R.drawable.equityjpg2
@@ -90,7 +98,6 @@ fun LoginScreen(onLoginClick: () -> Unit,
             }
         }
     }
-
 
     Column(
         modifier = Modifier
@@ -118,23 +125,26 @@ fun LoginScreen(onLoginClick: () -> Unit,
         Text(
             text = "Teller Automation",
             modifier = Modifier.padding(vertical = defaultPadding),
-            style = MaterialTheme.typography.h5 // or any other suitable body text style
+//            style = MaterialTheme.typography.h5, // or any other suitable body text style
+            style = MaterialTheme.typography.h5.copy(color = textColor)
+
         )
 
         Spacer(modifier = Modifier.height(30.dp))
+
         LoginTextField(
             value = userName,
             onValueChange = setUsername,
             labelText = "Username",
             leadingIcon = R.drawable.person_25,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
-        Spacer(Modifier.height(itemSpacing))
 
+        Spacer(Modifier.height(itemSpacing))
 
         LoginTextField(
             value = password,
-            onValueChange = setPassword, // Use setPassword instead of { password = it }
+            onValueChange = setPassword,
             labelText = "Password",
             leadingIcon = R.drawable.lock_25,
             modifier = Modifier.fillMaxWidth(),
@@ -142,6 +152,7 @@ fun LoginScreen(onLoginClick: () -> Unit,
             visualTransformation = PasswordVisualTransformation(),
             showPasswordToggle = true,
         )
+
 
         Spacer(Modifier.height(itemSpacing))
         Row(
@@ -153,10 +164,16 @@ fun LoginScreen(onLoginClick: () -> Unit,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Checkbox(checked = checked, onCheckedChange = onCheckedChange)
-                Text("Remember me")
+                Text(
+                    text = "Remember me",
+                    color = textColor // Use the textColor here
+                )
             }
             TextButton(onClick = onForgotPasswordClick) { // Use onForgotPasswordClick here
-                Text("Forgot Password?")
+                Text(
+                    text = "Forgot Password?",
+                    color = textColor // Use the textColor here
+                )
             }
         }
         Spacer(Modifier.height(itemSpacing))
@@ -195,11 +212,15 @@ fun LoginScreen(onLoginClick: () -> Unit,
         Button(
             onClick = { performLogin() },
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(13.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = if (isFieldsEmpty) maroon else maroon,
+                contentColor = Color.White
+            ),
             enabled = isFieldsEmpty
         ) {
             Text(
                 text = "Login",
-                color = Color.Gray,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -211,10 +232,16 @@ fun LoginScreen(onLoginClick: () -> Unit,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Don't have an Account?")
+            Text(
+                text = "Don't have an Account?",
+                color = textColor, // Set text color here
+            )
             Spacer(Modifier.width(itemSpacing))
             TextButton(onClick = onSignUpClick) {
-                Text("Sign Up")
+                Text(
+                    text = "Sign Up",
+                    color = textColor, // Set text color here
+                )
             }
         }
     }

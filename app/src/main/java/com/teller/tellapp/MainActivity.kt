@@ -31,20 +31,25 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-        @Composable
-        fun Greeting(name: String, modifier: Modifier = Modifier) {
-            Text(
-                text = "Hello $name!",
-                modifier = modifier
-            )
-        }
 
-    @Composable
-    fun GreetingPreview() {
-        TellAppTheme {
-            Greeting("Android")
-        }
+@Composable
+fun Greeting(name: String, modifier: Modifier = Modifier) {
+    Text(
+        text = "Hello $name!",
+        modifier = modifier
+    )
+}
+
+@Composable
+fun GreetingPreview() {
+    TellAppTheme {
+        Greeting("Android")
     }
+}
+
+
+
+
 
 
 

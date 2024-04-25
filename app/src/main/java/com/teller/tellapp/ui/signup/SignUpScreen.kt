@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
@@ -34,10 +32,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.teller.tellapp.ui.theme.TellAppTheme
-import com.teller.tellapp.ui.components.HeaderText
-import com.teller.tellapp.ui.components.LoginTextField
+import com.teller.tellapp.ui.login.LoginTextField
 import com.teller.tellapp.ui.login.defaultPadding
+import com.teller.tellapp.ui.theme.TellAppTheme
 
 
 @Composable
@@ -74,7 +71,7 @@ fun SignUpScreen(
                 color = MaterialTheme.colorScheme.error,
             )
         }
-        HeaderText(
+        Text(
             text = "Sign Up",
             modifier = Modifier.padding(vertical = defaultPadding)
                 .align(alignment = Alignment.Start)

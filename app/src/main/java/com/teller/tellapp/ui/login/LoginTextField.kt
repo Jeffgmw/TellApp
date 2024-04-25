@@ -1,4 +1,4 @@
-package com.teller.tellapp.ui.components
+package com.teller.tellapp.ui.login
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -21,6 +22,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.teller.tellapp.R
 
 @Composable
@@ -29,13 +31,19 @@ fun LoginTextField(
     value: String,
     onValueChange: (String) -> Unit,
     labelText: String,
-    leadingIcon: Int? = null, // Change to Int to accept drawable resource IDs
+    leadingIcon: Int? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     showPasswordToggle: Boolean = false,
+    textColor: Color = Color.Black, // Default text color
+    labelColor: Color = Color.Gray, // Default label color
+    borderColor: Color = Color.Gray
+
 ) {
     var passwordVisible by remember { mutableStateOf(false) } // State variable to track password visibility
     val context = LocalContext.current
+    val BorderColor = Color(ContextCompat.getColor(context, R.color.maroon))
+    val maroon = Color(0xFFA42C2C)
 
     OutlinedTextField(
         modifier = modifier.fillMaxWidth(), // Ensure the TextField fills the available width
@@ -87,5 +95,6 @@ fun PrevTextField() {
         keyboardType = KeyboardType.Password,
         showPasswordToggle = true,
         leadingIcon = R.drawable.person_24 // Example of passing a drawable resource ID
+
     )
 }

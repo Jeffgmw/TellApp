@@ -1,13 +1,18 @@
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,34 +29,67 @@ import androidx.navigation.NavController
 @Composable
 fun EditScannedDataScreen(navController: NavController, qrCode: String) {
 
-    var editedText by remember { mutableStateOf(qrCode) }
+    // Assuming the scanned data is in the format "key1:value1,key2:value2,..."
+    val scannedData = qrCode.split(",").associate {
+        val (key, value) = it.split(":")
+        key to value
+    }
+
+    // Create a mutable state for each key-value pair
+    var formData by remember { mutableStateOf(scannedData.toMutableMap()) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Scanned Data",
+            text = "Transaction Data",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
-        TextField(
-            value = editedText,
-            onValueChange = { editedText = it },
-            label = { Text("Scanned Data") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        // Create an OutlinedTextField for each key-value pair
+        formData.entries.forEachIndexed { index, entry ->
+            val (key, value) = entry
+            var fieldValue by remember { mutableStateOf(value) }
 
+            Text(
+                text = key,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = fieldValue,
+                onValueChange = { newValue ->
+                    fieldValue = newValue
+                    formData[key] = newValue
+                },
+                label = { Text("") },
+                modifier = Modifier.fillMaxWidth().height(60.dp),  // Set the height of the TextField
+                enabled = index >= 6,  // Disable the six three text fields
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.DarkGray,
+                    unfocusedBorderColor = Color.Gray
+                ),
+                shape = RoundedCornerShape(10.dp)
+            )
+        }
 
         Button(
             onClick = {
+                // Combine the edited values with their keys
+                val editedData = formData.map { "${it.key}:${it.value}" }.joinToString(",")
+                // Navigate back and pass the edited data
+                navController.previousBackStackEntry?.arguments?.putString("editedData", editedData)
                 navController.popBackStack()
             },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
@@ -60,3 +98,6 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String) {
         }
     }
 }
+
+
+

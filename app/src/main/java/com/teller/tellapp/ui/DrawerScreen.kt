@@ -68,13 +68,13 @@ fun NavDrawer(navHostController: NavHostController, openDrawer: () -> Unit) {
 
     val drawerItem = listOf(
         DrawerItems(Icons.Default.Face, "Profile", 0, false),
-        DrawerItems(Icons.Filled.Email, "Reports", 32, true),
-        DrawerItems(Icons.Filled.Favorite, "Updates", 32, true),
+        DrawerItems(Icons.Filled.Email, "Updates", 32, true),
+        DrawerItems(Icons.Filled.Favorite, "Favourites", 32, true),
         DrawerItems(Icons.Filled.Settings, "Settings", 0, false)
     )
     val drawerItem2 = listOf(
-        DrawerItems(Icons.Default.Share, "Others", 0, false),
-        DrawerItems(Icons.Filled.Star, "Rate", 0, false)
+        DrawerItems(Icons.Default.Share, "Share", 0, false),
+        DrawerItems(Icons.Filled.Star, "Notifications", 0, false)
     )
     var selectedItem by remember {
         mutableStateOf(drawerItem[0])
@@ -183,8 +183,6 @@ data class DrawerItems(
     val hasBadge : Boolean
 )
 
-
-
 @Composable
 fun NavigationDrawerItem(
     item: DrawerItems,
@@ -210,4 +208,3 @@ fun NavigationDrawerItem(
         }
     }
 }
-

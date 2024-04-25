@@ -48,6 +48,7 @@ val accentBrightPurple = Color(0xFFD8BFD8)
 
 val PurpleStart = Color(0xFFD24BE9)
 val PurpleEnd = Color(0xFFDF8FEC)
+val lightg = Color(0xFFC7C9D1)
 
 //val BlueStart = Color(0xFF2196F3)
 //val BlueEnd = Color(0xFF79C3FD)

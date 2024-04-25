@@ -23,6 +23,10 @@
     <color name="neutralWhite">#FFFFFF</color>
     <color name="accentBrightPurple">#D8BFD8</color>
     <color name="accentDarkPurple">#4B0082</color>
+    <color name="maroon">#A42C2C</color>
+    <color name="grayEq">#DBD4D4</color>
+    <color name="button_background_color">#DBD4D4</color>
+
 
 
 

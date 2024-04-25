@@ -1,6 +1,5 @@
 package com.teller.tellapp.ui.login
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,13 +7,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
@@ -26,10 +26,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.teller.tellapp.R
 
@@ -37,21 +39,36 @@ import com.teller.tellapp.R
 @Composable
 fun ForgotPasswordPage(navController: NavController) {
 
+    val context = LocalContext.current
     val buttonColors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
+    val BorderColor = Color(ContextCompat.getColor(context, R.color.maroon))
+
+    val icon = painterResource(if (isSystemInDarkTheme()) {
+        R.drawable.arrowbackwhite
+    } else {
+        R.drawable.arrowback
+    })
+
+    val grayEq = Color(0xFFDBD4D4)
+    val maroon = Color(0xFFA42C2C)
+
+//    val arrowbackicon = if (isSystemInDarkTheme()) {
+//        R.drawable.arrowbackwhite
+//    } else {
+//        R.drawable.arrowback
+//    }
 
     val textColor = if (isSystemInDarkTheme()) {
         Color.White
     } else {
         Color.Black
     }
-//    val textColor2 = LocalContentColor.current
 
     val logoResource = if (isSystemInDarkTheme()) {
-        R.drawable.equityjpg2 // Change this to the appropriate dark mode image resource
+        R.drawable.equityjpg2
     } else {
-        R.drawable.equityb // Default image resource for light mode
+        R.drawable.equityb
     }
-
 
     Column(
         modifier = Modifier
@@ -60,12 +77,26 @@ fun ForgotPasswordPage(navController: NavController) {
             .padding(start = 12.dp, end = 12.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Spacer(modifier = Modifier.height(100.dp))
 
-        Image( painter = painterResource(id = logoResource),
-            contentDescription ="App Logo",
-            modifier = Modifier.size(130.dp))
+        Spacer(modifier = Modifier.height(10.dp))
+        IconButton(
+            onClick = {navController.popBackStack() },
+            modifier = Modifier
+                .width(30.dp)
+                .align(Alignment.Start),
+        ) {
+            Icon(
+                painter = icon,
+                contentDescription = "Back to Login",
+                tint = Color.Black
+            )
+        }
 
+        Spacer(modifier = Modifier.height(120.dp))
+
+//        Image( painter = painterResource(id = logoResource),
+//            contentDescription ="App Logo",
+//            modifier = Modifier.size(130.dp))
 
         // Forgot Password title
         Text(
@@ -93,15 +124,15 @@ fun ForgotPasswordPage(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
+            shape = RoundedCornerShape(15.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 textColor = textColor,
-                focusedBorderColor = Color.Gray,
-                unfocusedBorderColor = Color.Gray,
+                focusedBorderColor = BorderColor,
+                unfocusedBorderColor = BorderColor,
                 placeholderColor = if (isSystemInDarkTheme()) Color.White else Color.Gray
             )
         )
-
-
+        Spacer(modifier = Modifier.height(100.dp))
 
         // Submit Button
         Button(
@@ -109,21 +140,12 @@ fun ForgotPasswordPage(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
-            colors = buttonColors,
-            shape = RoundedCornerShape(10.dp)
+            colors = ButtonDefaults.buttonColors(backgroundColor = maroon),
+            shape = RoundedCornerShape(13.dp)
         ) {
-            Text(text = "Submit")
+            Text(text = "Submit",
+                color = Color.White)
         }
 
-        Button(
-            onClick = { navController.popBackStack() }, // Navigate back to login screen
-            modifier = Modifier
-                .width(140.dp)
-                .align(Alignment.End),
-            colors = buttonColors,
-            shape = RoundedCornerShape(10.dp)
-        ) {
-            Text(text = "Back to Login")
-        }
     }
 }
