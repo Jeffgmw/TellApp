@@ -21,13 +21,4 @@ interface ApiService {
     @PUT("account/approve?id=1")
     fun approve(@Body transaction: Transaction):Call<EntityResponse<Transaction>>
 
-//    @GET("Customer/getCustomer?id=1")
-//    fun getCustomer(): Call<EntityResponse<Customer>>
-//
-//    @POST("account/withdrawReq?id=1")
-//    fun withdrawReq(@Body data: Withdraw): Call<Void>
-//
-//    @GET("Transaction/get?id=4")
-//    fun getTran(): Call<EntityResponse<Transaction>>
-
 }
