@@ -1,7 +1,7 @@
 package com.teller.tellapp
 
+import com.teller.tellapp.data.CustomerTransaction
 import com.teller.tellapp.data.Teller
-import com.teller.tellapp.data.Transaction
 import com.teller.tellapp.data.User
 import com.teller.tellapp.network.EntityResponse
 import retrofit2.Call
@@ -19,6 +19,6 @@ interface ApiService {
     fun login(@Body loginData: User): Call<EntityResponse<User>>
 
     @PUT("account/approve?id=1")
-    fun approve(@Body transaction: Transaction):Call<EntityResponse<Transaction>>
+    fun approve(@Body customerTransaction: CustomerTransaction):Call<EntityResponse<CustomerTransaction>>
 
 }

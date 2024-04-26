@@ -81,7 +81,7 @@ fun LoginTextField(
                 )
             }
         },
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
     )
 }
 

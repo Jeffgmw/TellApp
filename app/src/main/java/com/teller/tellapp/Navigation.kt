@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import com.teller.tellapp.network.RetrofitClient
 import com.teller.tellapp.ui.GLTransactionsPage
 import com.teller.tellapp.ui.NavDrawer
 import com.teller.tellapp.ui.QRCodeScanner
@@ -185,12 +186,13 @@ fun MyNavigation(navHostController: NavHostController) {
         composable(Route.EditScannedDataScreen().name) { backStackEntry ->
             // Retrieve the qrCode argument from the backStackEntry
             val qrCode = backStackEntry.arguments?.getString("qrCode") ?: ""
+            val apiService = RetrofitClient.instance // Get Retrofit service instance
 
             // Log the received QR code
             Log.d("EditScannedDataScreen", "Received QR code: $qrCode")
 
             // Pass the qrCode to the EditScannedDataScreen composable
-            EditScannedDataScreen(navController = navController, qrCode = qrCode)
+            EditScannedDataScreen(navController = navController, qrCode = qrCode, apiService = apiService)
         }
 
         composable(Route.TellerDetailsScreen().name){

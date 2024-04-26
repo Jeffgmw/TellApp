@@ -1,5 +1,6 @@
 package com.teller.tellapp.ui.login
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -39,24 +41,18 @@ import com.teller.tellapp.R
 @Composable
 fun ForgotPasswordPage(navController: NavController) {
 
+    val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
-    val buttonColors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
     val BorderColor = Color(ContextCompat.getColor(context, R.color.maroon))
-
-    val icon = painterResource(if (isSystemInDarkTheme()) {
-        R.drawable.arrowbackwhite
-    } else {
-        R.drawable.arrowback
-    })
 
     val grayEq = Color(0xFFDBD4D4)
     val maroon = Color(0xFFA42C2C)
 
-//    val arrowbackicon = if (isSystemInDarkTheme()) {
-//        R.drawable.arrowbackwhite
-//    } else {
-//        R.drawable.arrowback
-//    }
+    val arrowbackicon = if (isSystemInDarkTheme()) {
+        R.drawable.arrowbackwhite
+    } else {
+        R.drawable.arrowback
+    }
 
     val textColor = if (isSystemInDarkTheme()) {
         Color.White
@@ -64,18 +60,16 @@ fun ForgotPasswordPage(navController: NavController) {
         Color.Black
     }
 
-    val logoResource = if (isSystemInDarkTheme()) {
-        R.drawable.equityjpg2
-    } else {
-        R.drawable.equityb
-    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .clickable {
+                keyboardController?.hide()  // hide the keyboard
+            }
             .padding(horizontal = 13.dp, vertical = 0.dp)
             .padding(start = 12.dp, end = 12.dp)
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState()),
     ) {
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -86,19 +80,15 @@ fun ForgotPasswordPage(navController: NavController) {
                 .align(Alignment.Start),
         ) {
             Icon(
-                painter = icon,
+                painter = painterResource(id = arrowbackicon),
                 contentDescription = "Back to Login",
-                tint = Color.Black
+                tint = Color.Unspecified
             )
+
         }
 
         Spacer(modifier = Modifier.height(120.dp))
 
-//        Image( painter = painterResource(id = logoResource),
-//            contentDescription ="App Logo",
-//            modifier = Modifier.size(130.dp))
-
-        // Forgot Password title
         Text(
             text = "Forgot Password",
             color = textColor,
@@ -107,7 +97,6 @@ fun ForgotPasswordPage(navController: NavController) {
             modifier = Modifier.padding(vertical = 16.dp)
         )
 
-        // Enter your address text
         Text(
             text = "Enter your Email Address",
             color = textColor,
@@ -115,7 +104,6 @@ fun ForgotPasswordPage(navController: NavController) {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Email Address EditText
         var emailAddress by remember { mutableStateOf("") }
         OutlinedTextField(
             value = emailAddress,
@@ -132,9 +120,9 @@ fun ForgotPasswordPage(navController: NavController) {
                 placeholderColor = if (isSystemInDarkTheme()) Color.White else Color.Gray
             )
         )
+
         Spacer(modifier = Modifier.height(100.dp))
 
-        // Submit Button
         Button(
             onClick = { /* Handle submit action */ },
             modifier = Modifier
@@ -144,8 +132,8 @@ fun ForgotPasswordPage(navController: NavController) {
             shape = RoundedCornerShape(13.dp)
         ) {
             Text(text = "Submit",
-                color = Color.White)
+                color = Color.White
+            )
         }
-
     }
 }

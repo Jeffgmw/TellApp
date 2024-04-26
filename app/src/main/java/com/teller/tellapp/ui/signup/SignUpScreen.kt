@@ -2,6 +2,7 @@ package com.teller.tellapp.ui.signup
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
@@ -44,9 +46,13 @@ fun SignUpScreen(
     onPolicyClick: () -> Unit,
     onPrivacyClick: () -> Unit,
 ) {
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val (firstName, onFirstNameChange) = rememberSaveable {
         mutableStateOf("")
     }
+
     val (lastName, onLastNameChange) = rememberSaveable { mutableStateOf("") }
     val (email, onEmailChange) = rememberSaveable { mutableStateOf("") }
     val (password, onPasswordChange) = rememberSaveable { mutableStateOf("") }
@@ -62,7 +68,9 @@ fun SignUpScreen(
     Column(
         modifier = Modifier.fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(defaultPadding),
+            .padding(defaultPadding)
+            .clickable {
+                keyboardController?.hide()},
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AnimatedVisibility(isPasswordSame) {

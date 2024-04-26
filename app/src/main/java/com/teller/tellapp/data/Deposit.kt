@@ -11,4 +11,4 @@ data class Deposit(
     val depositerId: String,
     val depositerNo: String,
 
-    ) : Transaction()
+    ) : CustomerTransaction()

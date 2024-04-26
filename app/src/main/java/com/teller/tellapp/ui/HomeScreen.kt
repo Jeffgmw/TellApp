@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -69,85 +70,69 @@ import java.util.Locale
 @Composable
 fun HomeScreen(navController: NavController, openDrawer: () -> Unit)
  {
+     val keyboardController = LocalSoftwareKeyboardController.current
+
      TellAppTheme {
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+         Box(
+             modifier = Modifier
+                 .fillMaxSize()
+         ) {
+             Column(
+                 modifier = Modifier
+                     .fillMaxSize()
+                     .clickable { keyboardController?.hide() }
+                     .verticalScroll(rememberScrollState()),
+                 verticalArrangement = Arrangement.Top
+             ) {
+                 Row(
+                     modifier = Modifier.fillMaxWidth(),
+                     verticalAlignment = Alignment.CenterVertically,
+                     horizontalArrangement = Arrangement.SpaceBetween
+                 ) {
 
+                     BankLogo()
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.Top
-        ) {
+                     // Spacer to push DateAndTime to the right
+                     Spacer(modifier = Modifier.weight(1f))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-//                Icon(
-//                    imageVector = Icons.Default.Menu,
-//                    contentDescription = "Drawer Icon",
-//                    modifier = Modifier
-//                        .clickable {
-//                            openDrawer() // Call the openDrawer callback to open the drawer
-//                        }
-//                        .padding(16.dp)
-//                )
+                     DateAndTime()
 
-//                ModalDrawerSample(navController = navController)
+                 }
 
-                // Bank Logo
-                BankLogo()
+                 val context = LocalContext.current
 
-                // Spacer to push DateAndTime to the right
-                Spacer(modifier = Modifier.weight(1f))
+                 LogoutButton(
+                     logout = {
+                         logout(context, navController)
+                         // Implement logout functionality here
+                         // For example, call logout function or clear user session
+                     },
+                     navController = navController
+                 )
 
-                // Date and Time
-                DateAndTime()
+                 TopButtons(navController = navController)
 
-            }
+                 Spacer(modifier = Modifier.height(0.dp))
 
-            val context = LocalContext.current
+                 TellerAndTellerGls(navController = navController)
 
-            LogoutButton(
-                logout = {
-                    logout(context, navController)
-                    // Implement logout functionality here
-                    // For example, call logout function or clear user session
-                },
-                navController = navController
-            )
+                 Spacer(modifier = Modifier.height(0.dp))
 
-            TopButtons(navController = navController)
+                 SearchSection(navController = navController) {
 
-            Spacer(modifier = Modifier.height(0.dp))
+                 }
+                 Spacer(modifier = Modifier.height(5.dp))
 
-            TellerAndTellerGls(navController = navController)
+                 ButtonsTrans(navController = navController)
 
-            Spacer(modifier = Modifier.height(0.dp))
+                 Spacer(modifier = Modifier.height(16.dp))
 
-            SearchSection(navController = navController) {
+                 ScanButton(navController = navController)
 
-            }
-            Spacer(modifier = Modifier.height(5.dp))
-
-            ButtonsTrans(navController = navController)
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ScanButton(navController = navController)
-
-        }
-
-        // Bottom navigation
-
-        }
-    }
+             }
+         }
+     }
 }
 
 @Composable
@@ -185,7 +170,6 @@ fun DateAndTime() {
         modifier = Modifier.padding(10.dp)
     )
 }
-
 
 @Composable
 fun getCurrentTime(): String {
@@ -242,11 +226,10 @@ fun LogoutButton(logout: () -> Unit, navController: NavController) {
     }
 }
 
-// Example implementation of logout function
+// implementation of logout function
 fun logout(context: Context, navController: NavController) {
     val sharedPreferences = context.getSharedPreferences("my_app_pref", Context.MODE_PRIVATE)
     sharedPreferences.edit().clear().apply()
-
     // Clear the back stack and navigate to the login screen with a new task
     navController.navigate(Route.LoginScreen().name) {
         popUpTo(navController.graph.startDestinationId) {
@@ -257,8 +240,6 @@ fun logout(context: Context, navController: NavController) {
         restoreState = true
     }
 }
-
-
 
 
 @Composable
@@ -276,22 +257,22 @@ fun TopButtons(navController: NavController) {
             onClick = { navController.navigate(Route.TicketsScreen().name) },
             colors = buttonColors,
             modifier = Modifier
-                .width(120.dp) // Increase button width
+                .width(120.dp)
         ) {
             Text(
                 text = "Tickets",
-                color = Color.Black // Set text color to black
+                color = Color.Black
             )
         }
         Button(
             onClick = { navController.navigate(Route.ReferralsScreen().name) },
             colors = buttonColors,
             modifier = Modifier
-                .width(120.dp) // Increase button width
+                .width(120.dp)
         ) {
             Text(
                 text = "Referrals",
-                color = Color.Black // Set text color to black
+                color = Color.Black
             )
         }
 
@@ -299,7 +280,7 @@ fun TopButtons(navController: NavController) {
             onClick = { navController.navigate(Route.TellerReportScreen().name) },
             colors = buttonColors,
             modifier = Modifier
-                .width(120.dp) // Increase button width
+                .width(120.dp)
         ) {
             Text(
                 text = "Reports",
@@ -463,6 +444,8 @@ fun ClickableTextItem(text: String) {
 @Composable
 fun SearchSection(navController: NavController, openDrawer: () -> Unit) {
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val textColor = if (isSystemInDarkTheme()) {
         Color.White
     } else {
@@ -582,8 +565,6 @@ fun SearchSection(navController: NavController, openDrawer: () -> Unit) {
         }
     }
 }
-
-
 
 @Composable
 fun ButtonsTrans(navController: NavController) {

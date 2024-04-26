@@ -7,4 +7,4 @@ data class Withdraw(
     override val date: String,
     override val isCompleted: Boolean,
     override val imageData: String
-): Transaction()
+): CustomerTransaction()

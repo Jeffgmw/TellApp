@@ -2,6 +2,7 @@ package com.teller.tellapp.ui.login
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,12 +25,15 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -59,6 +63,10 @@ fun LoginScreen(onLoginClick: () -> Unit,
                 onForgotPasswordClick: () -> Unit,
                 navController: NavHostController
 ) {
+
+    var showError by rememberSaveable { mutableStateOf(false) }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val apiService = RetrofitClient.instance
 
@@ -102,8 +110,8 @@ fun LoginScreen(onLoginClick: () -> Unit,
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = defaultPadding)
-        .verticalScroll(rememberScrollState()),
+            .verticalScroll(rememberScrollState())
+            .clickable { keyboardController?.hide() },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -132,12 +140,22 @@ fun LoginScreen(onLoginClick: () -> Unit,
 
         Spacer(modifier = Modifier.height(30.dp))
 
+        // Display the error message if showError is true -defined in the performLogin()
+        if (showError) {
+            Text(
+                text = "Wrong credentials. Please try again.",
+                color = Color.Red,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+
         LoginTextField(
             value = userName,
             onValueChange = setUsername,
             labelText = "Username",
             leadingIcon = R.drawable.person_25,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .padding(start = 24.dp, end = 24.dp),
         )
 
         Spacer(Modifier.height(itemSpacing))
@@ -147,16 +165,18 @@ fun LoginScreen(onLoginClick: () -> Unit,
             onValueChange = setPassword,
             labelText = "Password",
             leadingIcon = R.drawable.lock_25,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .padding(start = 24.dp, end = 24.dp),
             keyboardType = KeyboardType.Password,
             visualTransformation = PasswordVisualTransformation(),
             showPasswordToggle = true,
         )
 
-
         Spacer(Modifier.height(itemSpacing))
+
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .padding(start = 24.dp, end = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
@@ -178,7 +198,6 @@ fun LoginScreen(onLoginClick: () -> Unit,
         }
         Spacer(Modifier.height(itemSpacing))
 
-
         // Function to handle login
         fun performLogin() {
             val loginRequest = User(username = userName, password = password)
@@ -199,6 +218,7 @@ fun LoginScreen(onLoginClick: () -> Unit,
                     } else {
                         Log.d("Login", "Unsuccessful login response: ${response.code()}")
                         // Handle unsuccessful login response
+                        showError = true // Set showError to true to display the error message
                     }
                 }
 
@@ -211,7 +231,8 @@ fun LoginScreen(onLoginClick: () -> Unit,
 
         Button(
             onClick = { performLogin() },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .padding(start = 24.dp, end = 24.dp),
             shape = RoundedCornerShape(13.dp),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = if (isFieldsEmpty) maroon else maroon,
@@ -226,11 +247,21 @@ fun LoginScreen(onLoginClick: () -> Unit,
             )
         }
 
+        // Display the error message if showError is true
+//        if (showError) {
+//            Text(
+//                text = "Wrong credentials. Please try again.",
+//                color = Color.Red,
+//                modifier = Modifier.padding(top = 8.dp)
+//            )
+//        }
+
         Spacer(modifier = Modifier.height(20.dp))
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
+                .padding(start = 24.dp, end = 24.dp)
         ) {
             Text(
                 text = "Don't have an Account?",

@@ -1,8 +1,7 @@
 package com.teller.tellapp.data
 
-sealed class Transaction {
+sealed class CustomerTransaction {
     abstract val id: Long
-
     // Common properties for all transactions
     abstract val transactionId: String
     abstract val amount: Double
