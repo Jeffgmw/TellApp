@@ -26,5 +26,4 @@ interface ApiService {
     fun approve(@Query("id") id: Long, @Body customerTransaction: Any): Call<EntityResponse<CustomerTransaction>>
 
 
-
 }
