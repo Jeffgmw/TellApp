@@ -1,7 +1,10 @@
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,6 +35,7 @@ import com.teller.tellapp.ApiService
 import com.teller.tellapp.Route
 import com.teller.tellapp.data.CustomerTransaction
 import com.teller.tellapp.data.Deposit
+import com.teller.tellapp.data.TransactionType
 import com.teller.tellapp.data.Withdraw
 import com.teller.tellapp.network.EntityResponse
 import retrofit2.Call
@@ -110,62 +114,107 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String, apiServi
             )
         }
 
-        Button(
-            onClick = {
-                // Combine the edited values with their keys
-                val editedData = formData.map { "${it.key}:${it.value}" }.joinToString(",")
-                // Approve the transaction based on the type
-                val transaction = if (formData["transactionType"] == "Deposit") {
-                    // Create a Deposit object
-                    Deposit(
-                        id = formData["id"]?.toLong() ?: 0,
-                        transactionId = formData["transactionId"] ?: "",
-                        amount = formData["amount"]?.toDouble() ?: 0.0,
-                        date = formData["date"] ?: "",
-                        isCompleted = true,
-                        imageData = "",
-                        depositer = formData["depositer"] ?: "",
-                        depositerId = formData["depositerId"] ?: "",
-                        depositerNo = formData["depositerNo"] ?: ""
-                    )
-                } else {
-                    // Create a Withdraw object
-                    Withdraw(
-                        id = formData["id"]?.toLong() ?: 0,
-                        transactionId = formData["transactionId"] ?: "",
-                        amount = formData["amount"]?.toDouble() ?: 0.0,
-                        date = formData["date"] ?: "",
-                        isCompleted = true,
-                        imageData = ""
-                    )
-                }
-                // Call the approve API
-                apiService.approve(transaction)
-                    .enqueue(object : Callback<EntityResponse<CustomerTransaction>> {
-                        override fun onResponse(
-                            call: Call<EntityResponse<CustomerTransaction>>,
-                            response: Response<EntityResponse<CustomerTransaction>>
-                        ) {
-                            // Handle success response
-                            if (response.isSuccessful) {
-                                // Navigate to a different screen upon success
-                                navController.navigate(Route.TransPageScreen().name) // Replace "destination_route" with the actual route of the destination screen
-                            } else {
-                                // Handle error response
-                            }
-                        }
+        fun processTransaction(formData: Map<String, String>, apiService: ApiService, navController: NavController) {
+            val id = formData["id"]?.trim()?.toLong() ?: 0
+            val transactionId = formData["transactionId"] ?: ""
+            val amount = formData["amount"]?.toDouble() ?: 0.0
+            val date = formData["date"] ?: ""
+            val isCompleted = true
+            val imageData = ""
+            val tellerId = formData["tellerId"]?.trim()?.toLong() ?: 0
+            val accountId = formData["accountId"]?.trim()?.toLong() ?: 0
+            val transactionType = if (formData["transactionType"] == "Deposit") TransactionType.DEPOSIT else TransactionType.WITHDRAWAL
 
-                        override fun onFailure(
-                            call: Call<EntityResponse<CustomerTransaction>>,
-                            t: Throwable
-                        ) {
-                            // Handle failure
+
+            val customerTransaction: CustomerTransaction = if (transactionType == TransactionType.DEPOSIT) {
+                Deposit(
+                    id = id,
+                    transactionId = transactionId,
+                    amount = amount,
+                    date = date,
+                    isCompleted = isCompleted,
+                    imageData = imageData,
+                    tellerId = tellerId,
+                    accountId = accountId,
+                    transactionType = transactionType,
+                    depositer = formData["depositer"] ?: "",
+                    depositerId = formData["depositerId"] ?: "",
+                    depositerNo = formData["depositerNo"] ?: ""
+                )
+            } else {
+                Withdraw(
+                    id = id,
+                    transactionId = transactionId,
+                    amount = amount,
+                    date = date,
+                    isCompleted = isCompleted,
+                    imageData = imageData,
+                    tellerId = tellerId,
+                    accountId = accountId,
+                    transactionType = transactionType
+                )
+            }
+
+            apiService.approve(id, customerTransaction).enqueue(object : Callback<EntityResponse<CustomerTransaction>> {
+                override fun onResponse(
+                    call: Call<EntityResponse<CustomerTransaction>>,
+                    response: Response<EntityResponse<CustomerTransaction>>
+                ) {
+                    if (response.isSuccessful) {
+                        val entityResponse = response.body()
+                        if (entityResponse != null && entityResponse.statusCode == 200) {
+                            // Log success
+                            Log.d("Transaction", "Transaction approval successful")
+                            // Optionally, you can navigate to another screen upon success
+                            navController.navigate(Route.HomeScreen().name)
+                            // Display true indicating success
+                            println(true)
+                        } else {
+                            // Log failure
+                            Log.d("Transaction", "Failed to approve transaction: ${entityResponse?.message ?: "Unknown error"}")
+                            // Display false indicating failure
+                            println(false)
                         }
-                    })
-            },
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
+                    } else {
+                        // Log failure
+                        Log.d("Transaction", "Error: ${response.code()} - ${response.message()}")
+                        // Display false indicating failure
+                        println(false)
+                    }
+                }
+
+                override fun onFailure(call: Call<EntityResponse<CustomerTransaction>>, t: Throwable) {
+                    // Log failure
+                    Log.e("Transaction", "Failed to approve transaction: ${t.message ?: "Unknown error"}", t)
+                    // Display false indicating failure
+                    println(false)
+                }
+            })
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Text("Submit")
+
+            Button(
+                onClick = {
+                    navController.navigate(Route.HomeScreen().name)
+                },
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
+            ) {
+                Text("Cancel")
+            }
+
+            Button(
+                onClick = {
+                    processTransaction(formData, apiService, navController)
+                },
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
+            ) {
+                Text("Submit")
+            }
         }
     }
 }

@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -14,11 +17,14 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.teller.tellapp.R
 
 
 @Preview
@@ -26,12 +32,11 @@ import androidx.compose.ui.unit.sp
 fun GLTransactionsPage() {
 
     val textColor = if (isSystemInDarkTheme()) {
-        Color.White // White color in dark mode
+        Color.White
     } else {
-        Color.Black // Black color in light mode
+        Color.Black
     }
 
-    // Sample data for transactions
     val transactions = listOf(
         TransactionRowData("2024-04-10 10:30", "1409876536", "400,000.00", "", "Teller1"),
         TransactionRowData("2024-04-09 15:45", "1409876536", "", "200,000.00", "Teller1"),
@@ -67,8 +72,9 @@ fun GLTransactionsPage() {
                         modifier = Modifier.padding(start = 8.dp, end = 8.dp)
                     )
                 },
-                backgroundColor = Color.Gray,
-                modifier = Modifier.padding(start = 4.dp, end = 4.dp),
+                backgroundColor = colorResource(id = R.color.maroon),
+                modifier = Modifier.padding(start = 4.dp, end = 4.dp, top = 4.dp)
+                    .clip(shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
                 elevation = AppBarDefaults.TopAppBarElevation
             )
         }
@@ -79,6 +85,7 @@ fun GLTransactionsPage() {
                 .padding(innerPadding)
                 .background(Color.White)
                 .padding(1.dp)
+                .verticalScroll(rememberScrollState())
                 .padding(top = 10.dp)
         ) {
             // Table Header Row

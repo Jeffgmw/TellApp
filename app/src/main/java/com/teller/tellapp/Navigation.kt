@@ -1,7 +1,7 @@
 package com.teller.tellapp
 
 import EditScannedDataScreen
-import TellerReportsPage
+import ReportsPage
 import TicketsPage
 import TransactionsPage
 import android.util.Log
@@ -11,7 +11,6 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.teller.tellapp.network.RetrofitClient
 import com.teller.tellapp.ui.GLTransactionsPage
@@ -34,11 +33,10 @@ sealed class Route {
     data class PrivacyScreen(val name: String = "Privacy") : Route()
     data class PolicyScreen(val name: String = "Policy") : Route()
     data class HomeScreen(val name: String = "Home") : Route()
-    data class TellerReportScreen(val name: String = "Reports") : Route()
-    data class TransactionScreen(val name: String = "Transactions") : Route()
+    data class ReportsScreen(val name: String = "Reports") : Route()
+    data class TransactionsScreen(val name: String = "Transactions") : Route()
     data class TicketsScreen(val name: String = "Tickets") : Route()
     data class ReferralsScreen(val name: String = "Referrals") : Route()
-    data class DrawerScreen(val name: String = "Drawer") : Route()
     data class TransPageScreen(val name: String = "TransaPage") : Route()
     data class QRCodeScreen(val name: String = "Scan") : Route()
     data class GLScreen (val name: String = "Row") : Route()
@@ -47,9 +45,8 @@ sealed class Route {
 }
 
 @Composable
-fun MyNavigation(navHostController: NavHostController) {
+fun MyNavigation(navHostController: NavHostController, navController: NavController) {
 
-    val navController = rememberNavController()
 
     NavHost(
         navController = navHostController,
@@ -127,21 +124,17 @@ fun MyNavigation(navHostController: NavHostController) {
 
         composable(route = Route.HomeScreen().name) {
             NavDrawer(navHostController = navHostController) {
-
             }
-        }
-//        composable(route = Route.DrawerScreen().name){
-//            NavDrawer(navHostController = navHostController) {
-//
-//            }
-//        }
-
-        composable(route = Route.TellerReportScreen().name) {
-            TellerReportsPage()
 
         }
-        composable(route = Route.TransactionScreen().name){
-            TransactionsPage()
+
+        composable(route = Route.ReportsScreen().name) {
+            ReportsPage(navController= navController)
+
+        }
+        composable(route = Route.TransactionsScreen().name){
+            TransactionsPage(navController= navController)
+
 
         }
         composable(route = Route.TicketsScreen().name){

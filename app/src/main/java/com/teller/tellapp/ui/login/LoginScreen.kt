@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Checkbox
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -34,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -65,6 +67,7 @@ fun LoginScreen(onLoginClick: () -> Unit,
 ) {
 
     var showError by rememberSaveable { mutableStateOf(false) }
+    var errorMessage by rememberSaveable { mutableStateOf("") }
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -80,6 +83,8 @@ fun LoginScreen(onLoginClick: () -> Unit,
         mutableStateOf(false)
     }
     val isFieldsEmpty = userName.isNotEmpty() && password.isNotEmpty()
+
+    var isLoading by rememberSaveable { mutableStateOf(false) }
 
     val context = LocalContext.current
 
@@ -121,7 +126,6 @@ fun LoginScreen(onLoginClick: () -> Unit,
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            // Add your icon image here
             Image(
                 painter = painterResource(id = logoResource),
                 contentDescription = "Icon Image"
@@ -141,10 +145,18 @@ fun LoginScreen(onLoginClick: () -> Unit,
         Spacer(modifier = Modifier.height(30.dp))
 
         // Display the error message if showError is true -defined in the performLogin()
+//        if (showError) {
+//            Text(
+//                text = "Wrong credentials. Please try again.",
+//                color = colorResource(id = R.color.maroon),
+//                modifier = Modifier.padding(top = 8.dp)
+//            )
+//        }
+
         if (showError) {
             Text(
-                text = "Wrong credentials. Please try again.",
-                color = Color.Red,
+                text = errorMessage,
+                color = colorResource(id = R.color.maroon),
                 modifier = Modifier.padding(top = 8.dp)
             )
         }
@@ -186,45 +198,58 @@ fun LoginScreen(onLoginClick: () -> Unit,
                 Checkbox(checked = checked, onCheckedChange = onCheckedChange)
                 Text(
                     text = "Remember me",
-                    color = textColor // Use the textColor here
+                    color = textColor
                 )
             }
-            TextButton(onClick = onForgotPasswordClick) { // Use onForgotPasswordClick here
+            TextButton(onClick = onForgotPasswordClick) {
                 Text(
                     text = "Forgot Password?",
-                    color = textColor // Use the textColor here
+                    color = textColor
                 )
             }
         }
         Spacer(Modifier.height(itemSpacing))
 
-        // Function to handle login
+        /// Function to handle login
         fun performLogin() {
+            isLoading = true
             val loginRequest = User(username = userName, password = password)
             apiService.login(loginRequest).enqueue(object : Callback<EntityResponse<User>> {
                 override fun onResponse(
                     call: Call<EntityResponse<User>>,
                     response: Response<EntityResponse<User>>
                 ) {
+                    isLoading = false
                     if (response.isSuccessful) {
                         val entityResponse = response.body()
                         if (entityResponse != null) {
-                            // Handle successful login response
                             navController.navigate(Route.HomeScreen().name)
+                            setUsername("")
+                            setPassword("")
+                            showError = false
+                            errorMessage = ""
                         } else {
                             Log.d("Login", "Null response body")
-                            // Handle null response body
+                            showError = true
+                            errorMessage = "An unexpected error occurred. Please try again."
                         }
                     } else {
                         Log.d("Login", "Unsuccessful login response: ${response.code()}")
-                        // Handle unsuccessful login response
-                        showError = true // Set showError to true to display the error message
+                        if (response.code() == 401) {
+                            showError = true
+                            errorMessage = "Wrong credentials. Please try again."
+                        } else {
+                            showError = true
+                            errorMessage = "An unexpected error occurred. Please try again."
+                        }
                     }
                 }
 
                 override fun onFailure(call: Call<EntityResponse<User>>, t: Throwable) {
+                    isLoading = false
                     Log.e("Login", "Network failure: ${t.message}", t)
-                    // Handle network failure
+                    showError = true
+                    errorMessage = "Failed to connect to server. Please try again later."
                 }
             })
         }
@@ -238,23 +263,23 @@ fun LoginScreen(onLoginClick: () -> Unit,
                 backgroundColor = if (isFieldsEmpty) maroon else maroon,
                 contentColor = Color.White
             ),
-            enabled = isFieldsEmpty
+            enabled = isFieldsEmpty && !isLoading // Disable button when loading
         ) {
-            Text(
-                text = "Login",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
+            if (isLoading) {
+                // Show loading indicator if isLoading is true
+                CircularProgressIndicator(
+                    color = colorResource(id = R.color.maroon)
+                )
 
-        // Display the error message if showError is true
-//        if (showError) {
-//            Text(
-//                text = "Wrong credentials. Please try again.",
-//                color = Color.Red,
-//                modifier = Modifier.padding(top = 8.dp)
-//            )
-//        }
+            } else {
+                // Show login text if isLoading is false
+                Text(
+                    text = "Login",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(20.dp))
         Row(

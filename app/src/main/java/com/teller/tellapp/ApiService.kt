@@ -9,6 +9,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -18,7 +19,12 @@ interface ApiService {
     @POST("auth/admin/signin")
     fun login(@Body loginData: User): Call<EntityResponse<User>>
 
-    @PUT("account/approve?id=1")
-    fun approve(@Body customerTransaction: CustomerTransaction):Call<EntityResponse<CustomerTransaction>>
+//    @PUT("account/approve?id=1")
+//    fun approve(@Body customerTransaction: Any):Call<EntityResponse<CustomerTransaction>>
+
+    @PUT("account/approve")
+    fun approve(@Query("id") id: Long, @Body customerTransaction: Any): Call<EntityResponse<CustomerTransaction>>
+
+
 
 }

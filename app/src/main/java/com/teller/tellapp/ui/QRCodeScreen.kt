@@ -150,11 +150,9 @@ fun QRCodeScanner(
                     .padding(32.dp)
             )
 
-            // Inside the QRCodeScanner composable
 // Trigger navigation to EditScannedDataScreen when a QR code is scanned
             if (qrCodeScanned) {
                 LaunchedEffect(key1 = qrCodeScanned) {
-                    // Navigate to the EditScannedDataScreen and pass scanned data directly
                     navController.navigate(
                         Route.EditScannedDataScreen().name
                             .replace("{qrCode}", code)
@@ -162,14 +160,10 @@ fun QRCodeScanner(
                 }
             }
 
-
-
             LaunchedEffect(key1 = qrCodeScanned) {
                 if (qrCodeScanned) {
-                    // Verify if LaunchedEffect is triggered
                     Log.d("Navigation", "LaunchedEffect triggered")
 
-                    // Navigate to the editing screen with the scanned data
                     val scannedData = code // Assuming 'code' holds the scanned data
                     navController.navigate(
                         Route.EditScannedDataScreen().name
@@ -177,52 +171,6 @@ fun QRCodeScanner(
                     )
                 }
             }
-
-
-            // Inside the QRCodeScanner composable
-
-//             Display submit and cancel buttons if a QR code is scanned
-//            if (qrCodeScanned) {
-//                Column(
-//                    modifier = Modifier.fillMaxWidth().padding(16.dp)
-//                ) {
-//                    Button(
-//                        onClick = {
-//                            try {
-//
-//                                navController.navigate(
-//                                    Route.EditScannedDataScreen().name
-//                                        .replace("{qrCode}", code)
-//                                )
-//
-//                                // Pass the scanned data to the EditScannedDataScreen
-////                                navController.navigate(
-////                                    Route.EditScannedDataScreen().name +
-////                                            "$code"
-////                                )
-//
-//
-//                            } catch (e: Exception) {
-//                                // Log or handle the exception
-//                                e.printStackTrace()
-//                            }
-//                        },
-//                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-//                        shape = RoundedCornerShape(10.dp),
-//                        colors = buttonColors
-//                    ) {
-//                        Text("Submit")
-//                    }
-//                    Button(
-//                        onClick = { onCancel() },
-//                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-//                        shape = RoundedCornerShape(10.dp),
-//                        colors = buttonColors
-//                    ) {
-//                        Text("Cancel")
-//                    }
-//                }
-//            }
         }
     }
 }

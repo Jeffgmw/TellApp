@@ -1,8 +1,6 @@
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,9 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -26,18 +24,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.teller.tellapp.R
+import com.teller.tellapp.Route
 
 
-@Preview(showBackground = true)
 @Composable
-fun TellerReportsPage() {
+fun ReportsPage(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -50,27 +47,28 @@ fun TellerReportsPage() {
                         modifier = Modifier.padding(start = 8.dp, end = 8.dp)
                     )
                 },
-                backgroundColor = Color.Gray,
-                modifier = Modifier.padding(start = 4.dp, end = 4.dp),
+                backgroundColor = colorResource(id = R.color.maroon),
+                modifier = Modifier.padding(start = 4.dp, end = 4.dp, top = 4.dp)
+                    .clip(shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
                 elevation = AppBarDefaults.TopAppBarElevation
             )
         },
-        content = { paddingValues ->
-            ReportsContent(paddingValues)
+        content = {
+            ReportsContent(navController = navController, paddingValues = it)
         }
     )
-    PerformanceDashboardSection()
 }
 
 @Composable
-fun ReportsContent(paddingValues: PaddingValues) {
+fun ReportsContent(navController: NavController, paddingValues: PaddingValues) {
 
-    val buttonColors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
+    val buttonColors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.grayEq))
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .verticalScroll(rememberScrollState())
             .padding(paddingValues),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -81,18 +79,22 @@ fun ReportsContent(paddingValues: PaddingValues) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(
-                onClick = { /* Add action for Cash Withdrawal button */ },
+                onClick = {
+                    println("Before navigation to TransactionsScreen")
+                    navController.navigate(Route.TransactionsScreen().name)
+                    println("After navigation to TransactionsScreen")
+                },
                 modifier = Modifier
-                    .height(86.dp) //
-                    .weight(1f) // Equal width
+                    .height(86.dp)
+                    .weight(1f)
                     .padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(10.dp),
-                colors = buttonColors // Set button color to gray
+                colors = buttonColors
             ) {
                 Text("Cash Withdrawal")
             }
             Button(
-                onClick = {  },
+                onClick = {navController.navigate(Route.TransactionsScreen().name) },
                 modifier = Modifier
                     .height(86.dp)
                     .weight(1f)
@@ -120,7 +122,7 @@ fun ReportsContent(paddingValues: PaddingValues) {
                 Text("Cash Hdentill")
             }
             Button(
-                onClick = { /* Add action for Cash Summary button */ },
+                onClick = { navController.navigate(Route.TransactionsScreen().name) },
                 modifier = Modifier
                     .height(86.dp)
                     .weight(1f)
@@ -148,7 +150,7 @@ fun ReportsContent(paddingValues: PaddingValues) {
                 Text("Service Report")
             }
             Button(
-                onClick = { /* Add action for Cash Summary button */ },
+                onClick = { /* Action for Cash Summary button */ },
                 modifier = Modifier
                     .height(86.dp)
                     .weight(1f)
@@ -156,94 +158,9 @@ fun ReportsContent(paddingValues: PaddingValues) {
                 shape = RoundedCornerShape(10.dp),
                 colors = buttonColors
             ) {
-                Text("Cash Summary")
+                Text("GLs Reports")
             }
         }
     }
 }
 
-@Composable
-fun PerformanceDashboardSection() {
-
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(270.dp))
-
-        Text(
-            text = "Performance dashboard".uppercase(),
-            color = Color.Black,
-            fontSize = 16.sp,
-        )
-        Spacer(modifier = Modifier.size(5.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Image(
-                modifier = Modifier
-                    .size(228.dp)
-                    .padding(start = 26.dp),
-                painter = painterResource(id = R.drawable.analytics),
-                contentDescription = "graph image"
-            )
-
-            // Separate child of Row
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.Top, // Aligns the children to the top
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                //Item
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(10.dp)
-                            .clip(shape = CircleShape)
-                            .background(
-                                color = colorResource(
-                                    id = R.color.gray
-                                )
-                            )
-                    )
-
-                    Text(
-                        text = "65%",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = Color.Black
-                    )
-
-                    Text(
-                        text = "Above average",
-                        fontSize = 15.sp,
-                        color = Color.Black
-                    )
-                }
-            }
-        }
-    }
-}
-
-
-
-//@Composable
-//fun ReportTab(text: String) {
-//    Box(
-//        modifier = Modifier
-//            .width(150.dp)
-//            .height(100.dp)
-//            .background(Color.Gray)
-//            .clickable { },
-//        contentAlignment = Alignment.Center
-//    ) {
-//        Text(text)
-//    }
-//}
