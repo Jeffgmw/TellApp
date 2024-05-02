@@ -1,5 +1,6 @@
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -35,6 +36,7 @@ import com.teller.tellapp.Route
 
 @Composable
 fun ReportsPage(navController: NavController) {
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -53,6 +55,7 @@ fun ReportsPage(navController: NavController) {
                 elevation = AppBarDefaults.TopAppBarElevation
             )
         },
+        backgroundColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
         content = {
             ReportsContent(navController = navController, paddingValues = it)
         }
@@ -62,12 +65,25 @@ fun ReportsPage(navController: NavController) {
 @Composable
 fun ReportsContent(navController: NavController, paddingValues: PaddingValues) {
 
+    val backgroundColor = if (isSystemInDarkTheme()) {
+        Color.Black // Change to your desired dark background color
+    } else {
+        Color.White // Change to your desired light background color
+    }
+
+    val textColor = if (isSystemInDarkTheme()) {
+        Color.White
+    } else {
+        Color.Black
+    }
+
     val buttonColors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.grayEq))
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .background(backgroundColor)
             .verticalScroll(rememberScrollState())
             .padding(paddingValues),
         verticalArrangement = Arrangement.Top,
@@ -91,7 +107,7 @@ fun ReportsContent(navController: NavController, paddingValues: PaddingValues) {
                 shape = RoundedCornerShape(10.dp),
                 colors = buttonColors
             ) {
-                Text("Cash Withdrawal")
+                Text("Cash Withdrawal", color = Color.Black)
             }
             Button(
                 onClick = {navController.navigate(Route.TransactionsScreen().name) },
@@ -102,7 +118,7 @@ fun ReportsContent(navController: NavController, paddingValues: PaddingValues) {
                 shape = RoundedCornerShape(10.dp),
                 colors = buttonColors
             ) {
-                Text("Cash Deposit")
+                Text("Cash Deposit", color = Color.Black)
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -119,7 +135,7 @@ fun ReportsContent(navController: NavController, paddingValues: PaddingValues) {
                 shape = RoundedCornerShape(10.dp),
                 colors = buttonColors
             ) {
-                Text("Cash Hdentill")
+                Text("Cash Hdentill", color = Color.Black)
             }
             Button(
                 onClick = { navController.navigate(Route.TransactionsScreen().name) },
@@ -130,7 +146,7 @@ fun ReportsContent(navController: NavController, paddingValues: PaddingValues) {
                 shape = RoundedCornerShape(10.dp),
                 colors = buttonColors
             ) {
-                Text("Cash Summary")
+                Text("Cash Summary", color = Color.Black)
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -147,7 +163,7 @@ fun ReportsContent(navController: NavController, paddingValues: PaddingValues) {
                 shape = RoundedCornerShape(10.dp),
                 colors = buttonColors
             ) {
-                Text("Service Report")
+                Text("Service Report", color = Color.Black)
             }
             Button(
                 onClick = { /* Action for Cash Summary button */ },
@@ -158,7 +174,7 @@ fun ReportsContent(navController: NavController, paddingValues: PaddingValues) {
                 shape = RoundedCornerShape(10.dp),
                 colors = buttonColors
             ) {
-                Text("GLs Reports")
+                Text("GLs Reports", color = Color.Black)
             }
         }
     }

@@ -2,6 +2,7 @@
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,14 +18,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -36,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.teller.tellapp.R
+
 
 
 @Composable
@@ -59,6 +66,7 @@ fun TransactionsPage(navController: NavController) {
                 elevation = AppBarDefaults.TopAppBarElevation
             )
         },
+        backgroundColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
         content = { paddingValues ->
             TransactionsContent(paddingValues)
         }
@@ -67,6 +75,17 @@ fun TransactionsPage(navController: NavController) {
 
 @Composable
 fun TransactionsContent(paddingValues: PaddingValues) {
+    var isDepositExpanded by remember { mutableStateOf(true) }
+    var isWithdrawalExpanded by remember { mutableStateOf(true) }
+
+    val textColor = if (isSystemInDarkTheme()) {
+        Color.White
+    } else {
+        Color.Black
+    }
+
+    val dropdownIcon = Icons.Default.ArrowDropDown
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -79,36 +98,92 @@ fun TransactionsContent(paddingValues: PaddingValues) {
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10),
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(id = R.color.white)
+                backgroundColor = colorResource(id = R.color.grayEq)
             ),
-            onClick = { /*TODO*/ }) {
+            onClick = {
+                isDepositExpanded = !isDepositExpanded
+                isWithdrawalExpanded = !isWithdrawalExpanded
+            }) {
             Text(
                 text = "View all transactions",
-                color = Color.Black
+                color = Color.DarkGray
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Deposit Transactions",
-            modifier = Modifier.padding(bottom = 8.dp),
-            style = TextStyle(fontSize = 18.sp)
-        )
-        HeaderRow()
-        DepositTransactions()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+                .clickable(onClick = { isDepositExpanded = !isDepositExpanded })
+                .background(colorResource(id = R.color.grayEq), shape = RoundedCornerShape(8.dp))
+        ) {
+            Text(
+                text = "Deposit Transactions",
+                modifier = Modifier.weight(1f)
+                    .padding(8.dp),
+
+                style = TextStyle(fontSize = 18.sp, color = Color.DarkGray)
+            )
+            IconButton(
+                onClick = { isDepositExpanded = !isDepositExpanded },
+                modifier = Modifier.padding(horizontal = 8.dp)
+            ) {
+                Icon(
+                    imageVector = dropdownIcon,
+                    contentDescription = "Toggle Dropdown",
+                    tint = Color.DarkGray
+                )
+            }
+        }
+        if (isDepositExpanded) {
+            HeaderRow()
+            DepositTransactions()
+        }
         Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Withdrawal Transactions",
-            modifier = Modifier.padding(bottom = 8.dp),
-            style = TextStyle(fontSize = 18.sp)
-        )
-        HeaderRow()
-        WithdrawalTransactions()
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+                .clickable(onClick = { isWithdrawalExpanded = !isWithdrawalExpanded })
+                .background(colorResource(id = R.color.grayEq), shape = RoundedCornerShape(8.dp))
+        ) {
+            Text(
+                text = "Withdrawal Transactions",
+                modifier = Modifier.weight(1f)
+                    .padding(8.dp),
+                style = TextStyle(fontSize = 18.sp, color = Color.DarkGray)
+            )
+            IconButton(
+                onClick = { isWithdrawalExpanded = !isWithdrawalExpanded },
+                modifier = Modifier.padding(horizontal = 8.dp)
+            ) {
+                Icon(
+                    imageVector = dropdownIcon,
+                    contentDescription = "Toggle Dropdown",
+                    tint = Color.DarkGray
+                )
+            }
+        }
+        if (isWithdrawalExpanded) {
+            HeaderRow()
+            WithdrawalTransactions()
+        }
     }
 }
 
 @Composable
 fun HeaderRow() {
+
+    val textColor = if (isSystemInDarkTheme()) {
+        Color.White
+    } else {
+        Color.Black
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -117,37 +192,45 @@ fun HeaderRow() {
     ) {
         Text(
             "Name",
+            color = textColor,
             modifier = Modifier.weight(1f),
             fontWeight = FontWeight.Bold
+
         )
         Text(
             "Account",
+            color = textColor,
             modifier = Modifier.weight(1.3f),
             fontWeight = FontWeight.Bold
         )
         Text(
             "Amount",
+            color = textColor,
             modifier = Modifier.weight(1f),
             fontWeight = FontWeight.Bold
         )
         Text(
             "Currency",
+            color = textColor,
             modifier = Modifier.weight(1.3f),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
         Text(
             "Time",
+            color = textColor,
             modifier = Modifier.weight(0.8f),
             fontWeight = FontWeight.Bold
         )
         Text(
             "Serve",
+            color = textColor,
             modifier = Modifier.weight(0.8f),
             fontWeight = FontWeight.Bold
         )
         Text(
             "Type",
+            color = textColor,
             modifier = Modifier.weight(0.8f),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
@@ -191,6 +274,11 @@ fun WithdrawalTransactions() {
 @Composable
 fun TransactionRow(transaction: Transaction, onClick: () -> Unit, isSelected: Boolean, selectedIndex: Int) {
     val backgroundColor = if (isSelected) Color.LightGray else Color.Transparent
+    val textColor = if (isSystemInDarkTheme()) {
+        Color.White
+    } else {
+        Color.Black
+    }
 
     Row(
         modifier = Modifier
@@ -201,31 +289,38 @@ fun TransactionRow(transaction: Transaction, onClick: () -> Unit, isSelected: Bo
     ) {
         Text(
             text = transaction.name,
+            color = textColor,
             modifier = Modifier.weight(1f).padding(end = 4.dp) // Add padding between columns
         )
         Text(
             text = transaction.account,
+            color = textColor,
             modifier = Modifier.weight(1.3f).padding(end = 4.dp)
         )
         Text(
             text = transaction.amount,
+            color = textColor,
             modifier = Modifier.weight(1f).padding(end = 4.dp)
         )
         Text(
             text = transaction.currency,
+            color = textColor,
             modifier = Modifier.weight(1.3f).padding(end = 4.dp),
             textAlign = TextAlign.Center
         )
         Text(
             text = transaction.time,
+            color = textColor,
             modifier = Modifier.weight(0.8f).padding(end = 4.dp)
         )
         Text(
             text = transaction.serve,
+            color = textColor,
             modifier = Modifier.weight(0.8f).padding(end = 4.dp)
         )
         Text(
             text = transaction.type,
+            color = textColor,
             modifier = Modifier.weight(0.8f).padding(end = 4.dp),
             textAlign = TextAlign.Center// s
         )

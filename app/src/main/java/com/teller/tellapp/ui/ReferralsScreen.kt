@@ -1,6 +1,7 @@
 package com.teller.tellapp.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -74,7 +75,7 @@ fun ReferralsPage() {
                 elevation = AppBarDefaults.TopAppBarElevation
             )
         },
-
+        backgroundColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
         content = { paddingValues ->
             LazyColumn(
                 modifier = Modifier
@@ -116,11 +117,19 @@ fun ReferralsPage() {
 
 @Composable
 fun HeaderColumn(text: String) {
+
+    val textColor = if (isSystemInDarkTheme()) {
+        Color.White
+    } else {
+        Color.Black
+    }
+
     Text(
         text = text,
         modifier = Modifier
             .padding(horizontal = 10.dp),
         style = TextStyle(fontWeight = FontWeight.Bold),
+        color = textColor
     )
 }
 
@@ -131,6 +140,7 @@ fun DataRow(
     isSelected: Boolean,
     selectedIndex: Int
 ) {
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -151,9 +161,17 @@ fun DataRow(
 
 @Composable
 fun DataItem(text: String) {
+
+    val textColor = if (isSystemInDarkTheme()) {
+        Color.White
+    } else {
+        Color.Black
+    }
+
     Text(
         text = text,
         modifier = Modifier
             .padding(horizontal = 10.dp),
+        color = textColor
     )
 }

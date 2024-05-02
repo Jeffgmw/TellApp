@@ -185,7 +185,7 @@ fun MyNavigation(navHostController: NavHostController, navController: NavControl
             Log.d("EditScannedDataScreen", "Received QR code: $qrCode")
 
             // Pass the qrCode to the EditScannedDataScreen composable
-            EditScannedDataScreen(navController = navController, qrCode = qrCode, apiService = apiService)
+            EditScannedDataScreen(navController = navController, qrCode = qrCode)
         }
 
         composable(Route.TellerDetailsScreen().name){

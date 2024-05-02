@@ -8,7 +8,6 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.PUT
 import retrofit2.http.Query
 
 interface ApiService {
@@ -22,8 +21,8 @@ interface ApiService {
 //    @PUT("account/approve?id=1")
 //    fun approve(@Body customerTransaction: Any):Call<EntityResponse<CustomerTransaction>>
 
-    @PUT("account/approve")
-    fun approve(@Query("id") id: Long, @Body customerTransaction: Any): Call<EntityResponse<CustomerTransaction>>
+    @POST("account/approve")
+    fun approve(@Query("tellerId") tellerId: Long, @Body customerTransaction: Any): Call<EntityResponse<CustomerTransaction>>
 
 
 }

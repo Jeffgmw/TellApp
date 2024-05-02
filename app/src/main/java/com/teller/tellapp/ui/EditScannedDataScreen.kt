@@ -37,7 +37,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.teller.tellapp.ApiService
 import com.teller.tellapp.R
 import com.teller.tellapp.Route
 import com.teller.tellapp.data.CustomerTransaction
@@ -45,13 +44,14 @@ import com.teller.tellapp.data.Deposit
 import com.teller.tellapp.data.TransactionType
 import com.teller.tellapp.data.Withdraw
 import com.teller.tellapp.network.EntityResponse
+import com.teller.tellapp.network.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
 @Composable
-fun EditScannedDataScreen(navController: NavController, qrCode: String, apiService: ApiService) {
+fun EditScannedDataScreen(navController: NavController, qrCode: String) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -86,7 +86,8 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String, apiServi
                     .clip(shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
                 elevation = AppBarDefaults.TopAppBarElevation
             )
-        }
+        },
+        backgroundColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -136,11 +137,12 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String, apiServi
                 )
             }
 
+
             fun processTransaction(
                 formData: Map<String, String>,
-                apiService: ApiService,
                 navController: NavController
             ) {
+                // Extracting formData
                 val id = formData["id"]?.trim()?.toLong() ?: 0
                 val transactionId = formData["transactionId"] ?: ""
                 val amount = formData["amount"]?.toDouble() ?: 0.0
@@ -150,89 +152,95 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String, apiServi
                 val tellerId = formData["tellerId"]?.trim()?.toLong() ?: 0
                 val accountId = formData["accountId"]?.trim()?.toLong() ?: 0
                 val transactionType =
-                    if (formData["transactionType"] == "Deposit") TransactionType.DEPOSIT else TransactionType.WITHDRAWAL
+                    if (formData["transactionType"] == "Deposit") TransactionType.DEPOSIT else TransactionType.WITHDRAW
 
+                // Creating CustomerTransaction based on transactionType
+                val customerTransaction: CustomerTransaction = if (transactionType == TransactionType.DEPOSIT) {
+                    Deposit(
+                        id = id,
+                        transactionId = transactionId,
+                        amount = amount,
+                        date = date,
+                        isCompleted = isCompleted,
+                        imageData = imageData,
+                        tellerId = tellerId,
+                        accountId = accountId,
+                        transactionType = transactionType,
+                        depositer = formData["depositer"] ?: "",
+                        depositerId = formData["depositerId"] ?: "",
+                        depositerNo = formData["depositerNo"] ?: ""
+                    )
+                } else {
+                    Withdraw(
+                        id = id,
+                        transactionId = transactionId,
+                        amount = amount,
+                        date = date,
+                        isCompleted = isCompleted,
+                        imageData = imageData,
+                        tellerId = tellerId,
+                        accountId = accountId,
+                        transactionType = transactionType
+                    )
+                }
 
-                val customerTransaction: CustomerTransaction =
-                    if (transactionType == TransactionType.DEPOSIT) {
-                        Deposit(
-                            id = id,
-                            transactionId = transactionId,
-                            amount = amount,
-                            date = date,
-                            isCompleted = isCompleted,
-                            imageData = imageData,
-                            tellerId = tellerId,
-                            accountId = accountId,
-                            transactionType = transactionType,
-                            depositer = formData["depositer"] ?: "",
-                            depositerId = formData["depositerId"] ?: "",
-                            depositerNo = formData["depositerNo"] ?: ""
-                        )
-                    } else {
-                        Withdraw(
-                            id = id,
-                            transactionId = transactionId,
-                            amount = amount,
-                            date = date,
-                            isCompleted = isCompleted,
-                            imageData = imageData,
-                            tellerId = tellerId,
-                            accountId = accountId,
-                            transactionType = transactionType
-                        )
-                    }
+                // Conditionally executing the approve API
+//                if (customerTransaction is Deposit || customerTransaction is Withdraw) {
 
-                apiService.approve(id, customerTransaction)
-                    .enqueue(object : Callback<EntityResponse<CustomerTransaction>> {
-                        override fun onResponse(
-                            call: Call<EntityResponse<CustomerTransaction>>,
-                            response: Response<EntityResponse<CustomerTransaction>>
-                        ) {
-                            if (response.isSuccessful) {
-                                val entityResponse = response.body()
-                                if (entityResponse != null && entityResponse.statusCode == 200) {
-                                    // Log success
-                                    Log.d("Transaction", "Transaction approval successful")
-                                    // Optionally, you can navigate to another screen upon success
-                                    navController.navigate(Route.HomeScreen().name)
-                                    // Display true indicating success
-                                    println(true)
+                    RetrofitClient.instance.approve(1, customerTransaction)
+                        .enqueue(object : Callback<EntityResponse<CustomerTransaction>> {
+                            override fun onResponse(
+                                call: Call<EntityResponse<CustomerTransaction>>,
+                                response: Response<EntityResponse<CustomerTransaction>>
+                            ) {
+                                if (response.isSuccessful) {
+                                    val entityResponse = response.body()
+                                    if (entityResponse != null && entityResponse.statusCode == 200) {
+                                        Log.d("Transaction", "Transaction approval successful")
+                                        // Navigate to another screen upon success
+                                        navController.navigate(Route.HomeScreen().name)
+                                        // Display true indicating success
+                                        println(true)
+                                    } else {
+                                        // Log failure
+                                        Log.d(
+                                            "Transaction",
+                                            "Failed to approve transaction: ${entityResponse?.message ?: "Unknown error"}"
+                                        )
+                                        // Display false indicating failure
+                                        println(false)
+                                    }
                                 } else {
                                     // Log failure
                                     Log.d(
                                         "Transaction",
-                                        "Failed to approve transaction: ${entityResponse?.message ?: "Unknown error"}"
+                                        "Error: ${response.code()} - ${response.message()}"
                                     )
                                     // Display false indicating failure
                                     println(false)
                                 }
-                            } else {
+                            }
+
+                            override fun onFailure(
+                                call: Call<EntityResponse<CustomerTransaction>>,
+                                t: Throwable
+                            ) {
                                 // Log failure
-                                Log.d(
+                                Log.e(
                                     "Transaction",
-                                    "Error: ${response.code()} - ${response.message()}"
+                                    "Failed to approve transaction: ${t.message ?: "Unknown error"}",
+                                    t
                                 )
                                 // Display false indicating failure
                                 println(false)
                             }
-                        }
-
-                        override fun onFailure(
-                            call: Call<EntityResponse<CustomerTransaction>>,
-                            t: Throwable
-                        ) {
-                            // Log failure
-                            Log.e(
-                                "Transaction",
-                                "Failed to approve transaction: ${t.message ?: "Unknown error"}",
-                                t
-                            )
-                            // Display false indicating failure
-                            println(false)
-                        }
-                    })
+                        })
+//                } else {
+//                    Log.e("Transaction", "Invalid transaction type")
+//                    println(false)
+//                }
             }
+
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -251,7 +259,7 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String, apiServi
 
                 Button(
                     onClick = {
-                        processTransaction(formData, apiService, navController)
+                        processTransaction(formData, navController)
                     },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
                 ) {
@@ -261,5 +269,4 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String, apiServi
         }
     }
 }
-
 

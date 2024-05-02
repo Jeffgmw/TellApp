@@ -1,6 +1,7 @@
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,6 +35,11 @@ import com.teller.tellapp.R
 @Composable
 fun TicketsPage() {
     val tickets = remember { generateTicketData() }
+    val textColor = if (isSystemInDarkTheme()) {
+        Color.White
+    } else {
+        Color.Black
+    }
 
     Scaffold(
         topBar = {
@@ -53,6 +59,7 @@ fun TicketsPage() {
                 elevation = AppBarDefaults.TopAppBarElevation
             )
         },
+        backgroundColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
         content = { innerPadding ->
             Column(
                 modifier = Modifier
@@ -65,21 +72,21 @@ fun TicketsPage() {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp), // Added padding at start and end
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     // Wrap each table header in a Column
                     Column {
-                        Text(text = "Ticket No.", fontWeight = FontWeight.Bold, color = Color.Black)
+                        Text(text = "Ticket No.", fontWeight = FontWeight.Bold, color = textColor)
                     }
                     Column {
-                        Text(text = "Service Type", fontWeight = FontWeight.Bold, color = Color.Black)
+                        Text(text = "Service Type", fontWeight = FontWeight.Bold, color = textColor)
                     }
                     Column {
-                        Text(text = "Amount", fontWeight = FontWeight.Bold, color = Color.Black)
+                        Text(text = "Amount", fontWeight = FontWeight.Bold, color = textColor)
                     }
                     Column {
-                        Text(text = "Wait Time", fontWeight = FontWeight.Bold, color = Color.Black)
+                        Text(text = "Wait Time", fontWeight = FontWeight.Bold, color = textColor)
                     }
                 }
 
@@ -117,6 +124,12 @@ fun ClickableTicketRow(
     isSelected: Boolean,
     selectedIndex: Int
 ) {
+    val textColor = if (isSystemInDarkTheme()) {
+        Color.White
+    } else {
+        Color.Black
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -126,10 +139,10 @@ fun ClickableTicketRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = ticket.ticketNo)
-        Text(text = ticket.serviceType)
-        Text(text = ticket.amount)
-        Text(text = ticket.waitTime)
+        Text(text = ticket.ticketNo, color = textColor)
+        Text(text = ticket.serviceType, color = textColor)
+        Text(text = ticket.amount, color = textColor)
+        Text(text = ticket.waitTime, color = textColor)
     }
 }
 
