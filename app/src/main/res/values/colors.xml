@@ -16,6 +16,9 @@
     <color name="keppel">#33AB9D</color>
     <color name="middle_red">#E98E6A</color>
     <color name="darkergray">#6A6A6A</color>
+    <color name="lightgray">#D3D3D3</color>
+    <color name="darkergreen">#039E03</color>
+    <color name="darkerred">#B60404</color>
 
     <color name="primaryPurple">#800080</color>
     <color name="secondaryBlue">#008080</color>

@@ -80,12 +80,13 @@ fun TellerDetailsTopBar() {
 fun TellerDetailsContent(teller: Teller, padding: PaddingValues) {
     Column(modifier = Modifier.padding(padding).padding(start = 12.dp)) {
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Name: ${teller.name}")
-        Text(text = "Email: ${teller.email}")
-        Text(text = "ID: ${teller.id}")
-        Text(text = "National ID: ${teller.national_id}")
-        Text(text = "PF Number: ${teller.pfnumber}")
+        Text(text = "Name: ${teller.name}", style = TextStyle(fontSize = 17.sp))
+        Text(text = "Email: ${teller.email}", style = TextStyle(fontSize = 17.sp))
+        Text(text = "ID: ${teller.id}", style = TextStyle(fontSize = 17.sp))
+        Text(text = "National ID: ${teller.national_id}", style = TextStyle(fontSize = 17.sp))
+        Text(text = "PF Number: ${teller.pfnumber}", style = TextStyle(fontSize = 17.sp))
     }
 }
+
 
 

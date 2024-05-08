@@ -181,11 +181,10 @@ fun MyNavigation(navHostController: NavHostController, navController: NavControl
             val qrCode = backStackEntry.arguments?.getString("qrCode") ?: ""
             val apiService = RetrofitClient.instance // Get Retrofit service instance
 
-            // Log the received QR code
             Log.d("EditScannedDataScreen", "Received QR code: $qrCode")
 
-            // Pass the qrCode to the EditScannedDataScreen composable
-            EditScannedDataScreen(navController = navController, qrCode = qrCode)
+            EditScannedDataScreen(navController, qrCode)
+
         }
 
         composable(Route.TellerDetailsScreen().name){

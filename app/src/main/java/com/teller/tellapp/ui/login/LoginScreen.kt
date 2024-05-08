@@ -249,7 +249,7 @@ fun LoginScreen(onLoginClick: () -> Unit,
                     isLoading = false
                     Log.e("Login", "Network failure: ${t.message}", t)
                     showError = true
-                    errorMessage = "Failed to connect to server. Please try again later."
+                    errorMessage = "Unable to connect to server. Please try again later."
                 }
             })
         }

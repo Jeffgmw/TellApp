@@ -342,10 +342,20 @@ fun TellerAndTellerGls(navController: NavController) {
                                     }
                             ) {
                                 rowData.forEachIndexed { itemIndex, item ->
-                                    val textColor = if (itemIndex == 0 || itemIndex == 1 || itemIndex == 3) textColor else Color.Black
-                                    val cellColor = if (itemIndex == 2 && isAvailableBalGreaterThanRequired) Color.Green
-                                    else if (itemIndex == 2 && !isAvailableBalGreaterThanRequired) Color.Red
-                                    else textColor
+                                    val textColor = if (itemIndex == 0 || itemIndex == 1 || itemIndex == 3) {
+                                        colorResource(id = R.color.black)
+                                    } else {
+                                        Color.Black // Default text color
+                                    }
+
+                                    val cellColor = if (itemIndex == 2 && isAvailableBalGreaterThanRequired) {
+                                        colorResource(id = R.color.darkergreen)
+                                    } else if (itemIndex == 2 && !isAvailableBalGreaterThanRequired) {
+                                        colorResource(id = R.color.darkerred)
+                                    } else {
+                                        textColor
+                                    }
+
                                     Text(
                                         text = item,
                                         color = cellColor,
@@ -381,12 +391,10 @@ fun SearchSection(navController: NavController, openDrawer: () -> Unit) {
     val searchTextState = remember { mutableStateOf(TextFieldValue()) }
     val iconBackgroundGradient = Brush.verticalGradient(
         colors = listOf(
-            colorResource(id = R.color.grayEq),
-            colorResource(id = R.color.darkergray)
+            colorResource(id = R.color.lightgray),
+            colorResource(id = R.color.grayEq)
         )
     )
-
-
 
     var expanded by remember { mutableStateOf(false) }
     val dropdownItems = listOf("Account", "Name", "Id/Passport", "Phone Number", "CIF")
@@ -438,11 +446,10 @@ fun SearchSection(navController: NavController, openDrawer: () -> Unit) {
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     cursorColor = Color.DarkGray,
-                    focusedBorderColor = colorResource(id = R.color.neutralGray), // Your focused border color
-                    unfocusedBorderColor = colorResource(id = R.color.neutralGray) // Your unfocused border color
+                    focusedBorderColor = colorResource(id = R.color.grayEq),
+                    unfocusedBorderColor = colorResource(id = R.color.grayEq)
                 )
             )
-
 
             Box(
                 modifier = Modifier

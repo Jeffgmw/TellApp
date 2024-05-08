@@ -1,5 +1,8 @@
 
+import android.content.Context
+import android.os.Handler
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
@@ -37,23 +41,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.gson.JsonObject
 import com.teller.tellapp.R
 import com.teller.tellapp.Route
-import com.teller.tellapp.data.CustomerTransaction
-import com.teller.tellapp.data.Deposit
-import com.teller.tellapp.data.TransactionType
 import com.teller.tellapp.data.Withdraw
 import com.teller.tellapp.network.EntityResponse
 import com.teller.tellapp.network.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun EditScannedDataScreen(navController: NavController, qrCode: String) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
 
     val textColor = if (isSystemInDarkTheme()) {
         Color.White
@@ -61,10 +66,21 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String) {
         Color.Black
     }
 
-    // Assuming the scanned data is in the format "key1:value1,key2:value2,..."
+    // Scanned data in the format "key1:value1,key2:value2,..."
     val scannedData = qrCode.split(",").associate {
         val (key, value) = it.split(":")
-        key to value
+        // Map key names to match the property names in the Withdraw data class
+        when (key.trim()) {
+            "id" -> "id" to value.trim()
+            "transactionID" -> "transactionId" to value.trim()
+            "amount" -> "amount" to value.trim()
+            "date" -> "date" to value.trim()
+            "isCompleted" -> "isCompleted" to value.trim()
+            "imageData" -> "imageData" to value.trim()
+            "account_Id" -> "accountId" to value.trim()
+            "transactionType" -> "transactionType" to value.trim()
+            else -> key.trim() to value.trim()
+        }
     }
 
     var formData by remember { mutableStateOf(scannedData.toMutableMap()) }
@@ -101,7 +117,7 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String) {
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Create an OutlinedTextField for each key-value pair
+            // OutlinedTextField for each key-value pair
             formData.entries.forEachIndexed { index, entry ->
                 val (key, value) = entry
                 var fieldValue by remember { mutableStateOf(value) }
@@ -121,13 +137,13 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String) {
                     value = fieldValue,
                     onValueChange = { newValue ->
                         fieldValue = newValue
-                        formData[key] = newValue
+                        formData = formData.toMutableMap().apply { this[key] = newValue }
                     },
                     label = { Text("") },
                     modifier = Modifier.fillMaxWidth()
                         .height(60.dp)
                         .padding(start = 24.dp, end = 24.dp),
-                    enabled = index >= 6,  // Disable the six three text fields
+                    enabled = index >= 3,  // Disable the first three text fields
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Color.DarkGray,
                         unfocusedBorderColor = Color.Gray,
@@ -136,111 +152,6 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String) {
                     shape = RoundedCornerShape(10.dp),
                 )
             }
-
-
-            fun processTransaction(
-                formData: Map<String, String>,
-                navController: NavController
-            ) {
-                // Extracting formData
-                val id = formData["id"]?.trim()?.toLong() ?: 0
-                val transactionId = formData["transactionId"] ?: ""
-                val amount = formData["amount"]?.toDouble() ?: 0.0
-                val date = formData["date"] ?: ""
-                val isCompleted = true
-                val imageData = ""
-                val tellerId = formData["tellerId"]?.trim()?.toLong() ?: 0
-                val accountId = formData["accountId"]?.trim()?.toLong() ?: 0
-                val transactionType =
-                    if (formData["transactionType"] == "Deposit") TransactionType.DEPOSIT else TransactionType.WITHDRAW
-
-                // Creating CustomerTransaction based on transactionType
-                val customerTransaction: CustomerTransaction = if (transactionType == TransactionType.DEPOSIT) {
-                    Deposit(
-                        id = id,
-                        transactionId = transactionId,
-                        amount = amount,
-                        date = date,
-                        isCompleted = isCompleted,
-                        imageData = imageData,
-                        tellerId = tellerId,
-                        accountId = accountId,
-                        transactionType = transactionType,
-                        depositer = formData["depositer"] ?: "",
-                        depositerId = formData["depositerId"] ?: "",
-                        depositerNo = formData["depositerNo"] ?: ""
-                    )
-                } else {
-                    Withdraw(
-                        id = id,
-                        transactionId = transactionId,
-                        amount = amount,
-                        date = date,
-                        isCompleted = isCompleted,
-                        imageData = imageData,
-                        tellerId = tellerId,
-                        accountId = accountId,
-                        transactionType = transactionType
-                    )
-                }
-
-                // Conditionally executing the approve API
-//                if (customerTransaction is Deposit || customerTransaction is Withdraw) {
-
-                    RetrofitClient.instance.approve(1, customerTransaction)
-                        .enqueue(object : Callback<EntityResponse<CustomerTransaction>> {
-                            override fun onResponse(
-                                call: Call<EntityResponse<CustomerTransaction>>,
-                                response: Response<EntityResponse<CustomerTransaction>>
-                            ) {
-                                if (response.isSuccessful) {
-                                    val entityResponse = response.body()
-                                    if (entityResponse != null && entityResponse.statusCode == 200) {
-                                        Log.d("Transaction", "Transaction approval successful")
-                                        // Navigate to another screen upon success
-                                        navController.navigate(Route.HomeScreen().name)
-                                        // Display true indicating success
-                                        println(true)
-                                    } else {
-                                        // Log failure
-                                        Log.d(
-                                            "Transaction",
-                                            "Failed to approve transaction: ${entityResponse?.message ?: "Unknown error"}"
-                                        )
-                                        // Display false indicating failure
-                                        println(false)
-                                    }
-                                } else {
-                                    // Log failure
-                                    Log.d(
-                                        "Transaction",
-                                        "Error: ${response.code()} - ${response.message()}"
-                                    )
-                                    // Display false indicating failure
-                                    println(false)
-                                }
-                            }
-
-                            override fun onFailure(
-                                call: Call<EntityResponse<CustomerTransaction>>,
-                                t: Throwable
-                            ) {
-                                // Log failure
-                                Log.e(
-                                    "Transaction",
-                                    "Failed to approve transaction: ${t.message ?: "Unknown error"}",
-                                    t
-                                )
-                                // Display false indicating failure
-                                println(false)
-                            }
-                        })
-//                } else {
-//                    Log.e("Transaction", "Invalid transaction type")
-//                    println(false)
-//                }
-            }
-
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -259,7 +170,7 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String) {
 
                 Button(
                     onClick = {
-                        processTransaction(formData, navController)
+                        processTransaction(navController, context, formData)
                     },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
                 ) {
@@ -270,3 +181,76 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String) {
     }
 }
 
+// Format date string
+fun formatDate(dateString: String): String {
+    return SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault()).format(Date())
+}
+
+fun processTransaction(
+    navController: NavController,
+    context: Context,
+    formData: Map<String, String>
+) {
+    Log.d("TransactionApproval", "Starting transaction approval...")
+
+    Log.d("ScannedData", "Parsed data: $formData")
+
+    // JSON object with required fields and values
+    val transactionJson = JsonObject().apply {
+        addProperty("account_id", formData["accountId"].orEmpty().toLongOrNull() ?: 0L)
+        addProperty("amount", formData["amount"].orEmpty().toDoubleOrNull() ?: 0.0)
+        addProperty("completed", formData["isComplete"].orEmpty().toBoolean())
+        addProperty("date", formatDate(formData["date"].orEmpty()))
+        addProperty("id", 0)  // Assuming ID is not relevant for approval
+        addProperty("imageData", formData["imageData"].orEmpty())
+        addProperty("transactionId", formData["transactionId"].orEmpty())
+        addProperty("transactionType", formData["transactionType"].toString())
+    }
+
+    Log.d(
+        "TransactionApproval",
+        "Data to be sent for approval: $transactionJson"
+    )
+
+    val service = RetrofitClient.instance
+
+    // Approve API method
+    val call = service.approve(transactionJson)
+    call.enqueue(object : Callback<EntityResponse<Withdraw>> {
+        override fun onResponse(
+            call: Call<EntityResponse<Withdraw>>,
+            response: Response<EntityResponse<Withdraw>>
+        ) {
+            if (response.isSuccessful) {
+                Log.d("TransactionApproval", "Transaction approved successfully.")
+
+                val toast = Toast.makeText(context, "Transaction approved successfully.", Toast.LENGTH_LONG)
+                toast.show()
+                // Delay for 3 seconds and then cancel the toast
+                Handler().postDelayed({
+                    toast.cancel()
+
+                    navController.navigate(Route.HomeScreen().name)
+
+                }, 3000)
+            } else {
+                // Log approval failure
+                Log.e(
+                    "TransactionApproval",
+                    "Transaction approval failed. Response code: ${response.code()}"
+                )
+            }
+        }
+
+        override fun onFailure(
+            call: Call<EntityResponse<Withdraw>>,
+            t: Throwable
+        ) {
+            // Log approval failure due to network error
+            Log.e(
+                "TransactionApproval",
+                "Failed to approve transaction. Error: ${t.message}"
+            )
+        }
+    })
+}
