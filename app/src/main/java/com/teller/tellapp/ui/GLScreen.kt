@@ -200,9 +200,9 @@ fun TransactionRow(
     user: String
 ) {
     val textColor = if (isSystemInDarkTheme()) {
-        Color.White // White color in dark mode
+        Color.White
     } else {
-        Color.Black // Black color in light mode
+        Color.Black
     }
 
     Row(

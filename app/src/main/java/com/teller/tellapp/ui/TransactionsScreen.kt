@@ -1,12 +1,10 @@
 
-
-
-
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -65,7 +63,6 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
 
 @Composable
 fun TransactionsPage(navController: NavController) {
@@ -418,7 +415,7 @@ val WithdrawalTransactionData = listOf(
 @Composable
 fun DownloadButton(
     requestPermissionLauncher: ManagedActivityResultLauncher<String, Boolean>,
-    modifier: Modifier = Modifier // Add default value for the modifier parameter
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
@@ -438,7 +435,7 @@ fun DownloadButton(
                 requestPermissionLauncher.launch(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE).toString())
             }
         },
-        modifier = modifier, // Use the provided modifier here
+        modifier = modifier,
         content = {
             Icon(
                 painter = painterResource(id = R.drawable.filedownload),
@@ -450,42 +447,51 @@ fun DownloadButton(
     )
 }
 
-
 fun downloadTransactions(context: Context) {
     val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
     val currentTimeStamp = dateFormat.format(Date())
 
     val fileName = "Transactions_$currentTimeStamp.pdf"
 
+    // Get the directory for internal storage
     val directory = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-    if (!directory?.exists()!!) {
-        directory.mkdirs()
-    }
 
+    // Create the file object within the internal storage Downloads directory
     val file = File(directory, fileName)
 
     try {
+        // Create a new Document
         val document = Document()
+
+        // Create a PdfWriter instance
         PdfWriter.getInstance(document, FileOutputStream(file))
+
+        // Open the document
         document.open()
 
-        // Add deposit transactions
+        // Deposit transactions
         document.add(Paragraph("Deposit Transactions"))
         for (transaction in DepositTransactionData) {
             document.add(Paragraph(transaction.toString()))
         }
 
-        //Withdrawal transactions
+        // Withdrawal transactions
         document.add(Paragraph("Withdrawal Transactions"))
         for (transaction in WithdrawalTransactionData) {
             document.add(Paragraph(transaction.toString()))
         }
 
+        // Close the document
         document.close()
 
+        // Log the storage directory
+        Log.d("DownloadTransactions", "File saved to: ${file.absolutePath}")
+
+        // Show a success message
         Toast.makeText(context, "Transactions downloaded successfully", Toast.LENGTH_SHORT).show()
     } catch (e: Exception) {
         e.printStackTrace()
+        // Show an error message if any exception occurs
         Toast.makeText(context, "Error downloading transactions", Toast.LENGTH_SHORT).show()
     }
 }

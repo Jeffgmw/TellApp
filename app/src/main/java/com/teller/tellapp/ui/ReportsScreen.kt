@@ -66,9 +66,9 @@ fun ReportsPage(navController: NavController) {
 fun ReportsContent(navController: NavController, paddingValues: PaddingValues) {
 
     val backgroundColor = if (isSystemInDarkTheme()) {
-        Color.Black // Change to your desired dark background color
+        Color.Black
     } else {
-        Color.White // Change to your desired light background color
+        Color.White
     }
 
     val textColor = if (isSystemInDarkTheme()) {

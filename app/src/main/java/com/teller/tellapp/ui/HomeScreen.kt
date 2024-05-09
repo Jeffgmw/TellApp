@@ -96,7 +96,7 @@ fun HomeScreen(navController: NavController, openDrawer: () -> Unit)
                      LogoutButton(
                          logout = {
                              logout(context, navController)
-                             // Implement logout functionality
+
                          },
                          navController = navController
                      )
@@ -131,7 +131,7 @@ fun HomeScreen(navController: NavController, openDrawer: () -> Unit)
 @Composable
 fun BankLogo() {
     val logoResource = if (isSystemInDarkTheme()) {
-        R.drawable.equityjpg2 // Change this to the appropriate dark mode image resource
+        R.drawable.equityjpg2
     } else {
         R.drawable.equityb // Default image resource for light mode
     }
@@ -151,7 +151,7 @@ fun DateAndTime() {
     val textColor = if (isSystemInDarkTheme()) {
         Color.White // White color in dark mode
     } else {
-        Color.Black // Black color in light mode
+        Color.Black
     }
 
     val currentTime by rememberUpdatedState(getCurrentTime())
@@ -191,14 +191,14 @@ fun LogoutButton(logout: () -> Unit, navController: NavController) {
 
     Box(
         modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.TopEnd // Aligns the content to the top end of the Box
+        contentAlignment = Alignment.TopEnd
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End,
             modifier = Modifier.padding(end = 16.dp, start = 16.dp)
         ) {
-            // Logout Text
+
             Text(
                 text = "Logout",
                 color = textColor,
@@ -207,7 +207,6 @@ fun LogoutButton(logout: () -> Unit, navController: NavController) {
                 modifier = Modifier.padding(end = 10.dp)
             )
 
-            // Logout Icon
             Image(
                 painter = painterResource(id = R.drawable.logoutic),
                 contentDescription = "Logout Icon",
@@ -225,7 +224,6 @@ fun LogoutButton(logout: () -> Unit, navController: NavController) {
 }
 
 
-// implementation of logout function
 fun logout(context: Context, navController: NavController) {
     val sharedPreferences = context.getSharedPreferences("my_app_pref", Context.MODE_PRIVATE)
     sharedPreferences.edit().clear().apply()
@@ -241,17 +239,14 @@ fun logout(context: Context, navController: NavController) {
 }
 
 
-
-
 @Composable
 fun TellerAndTellerGls(navController: NavController) {
 
     val backgroundColor = if (isSystemInDarkTheme()) {
-        colorResource(id = R.color.grayEq) // Dark theme background color
+        colorResource(id = R.color.grayEq)
     } else {
         colorResource(id = R.color.grayEq) // Light theme background color
     }
-
 
     val textColor = if (isSystemInDarkTheme()) {
         Color.Black // White color in dark mode
@@ -267,7 +262,7 @@ fun TellerAndTellerGls(navController: NavController) {
                 .fillMaxWidth()
                 .background(
                     color = backgroundColor,
-                    shape = RoundedCornerShape(13.dp) // Add shape here
+                    shape = RoundedCornerShape(13.dp)
                 )
         ) {
             Row {
