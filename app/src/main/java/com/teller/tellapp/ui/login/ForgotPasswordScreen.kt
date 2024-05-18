@@ -45,7 +45,6 @@ fun ForgotPasswordPage(navController: NavController) {
     val context = LocalContext.current
     val BorderColor = Color(ContextCompat.getColor(context, R.color.maroon))
 
-    val grayEq = Color(0xFFDBD4D4)
     val maroon = Color(0xFFA42C2C)
 
     val arrowbackicon = if (isSystemInDarkTheme()) {
@@ -65,7 +64,7 @@ fun ForgotPasswordPage(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .clickable {
-                keyboardController?.hide()  // hide the keyboard
+                keyboardController?.hide()
             }
             .padding(horizontal = 13.dp, vertical = 0.dp)
             .padding(start = 12.dp, end = 12.dp)

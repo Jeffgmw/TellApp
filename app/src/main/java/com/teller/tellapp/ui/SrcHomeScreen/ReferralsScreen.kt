@@ -1,4 +1,4 @@
-package com.teller.tellapp.ui
+package com.teller.tellapp.ui.SrcHomeScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -35,12 +35,9 @@ import com.teller.tellapp.R
 
 val referralData = listOf(
     Referral("Jeff Top", "56123", "USD", 100.0, "2024-04-10", "user1"),
-    Referral("Jane Tumi", "87456", "EUR", 150.0, "2024-04-10", "user2"),
-    Referral("Tony Mon", " 45789", "GBP", 200.0, "2024-04-10", "user3"),
     Referral("Kim Doe", " 55789", "KES", 199.0, "2024-04-10", "user4"),
-    Referral("John Sal", " 65789", "UGX", 300.0, "2024-04-10", "user5"),
-    Referral("Kev Karl", " 75789", "AUD", 500.0, "2024-04-10", "user6"),
-    Referral("Pete Sam", " 85789", "JPY", 260.0, "2024-04-10", "user7"),
+    Referral("Kev Karl", " 75789", "EUR", 500.0, "2024-04-10", "user6"),
+    Referral("Pete Dave", " 85789", "GBP", 260.0, "2024-04-10", "user7"),
 )
 
 data class Referral(
@@ -144,7 +141,7 @@ fun DataRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick) // Toggle clicked state
+            .clickable(onClick = onClick)
             .padding(vertical = 8.dp)
             .background(if (isSelected && selectedIndex == referral.name.toIntOrNull()) Color.DarkGray else Color.Transparent),
         verticalAlignment = Alignment.CenterVertically,

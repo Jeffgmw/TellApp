@@ -1,6 +1,6 @@
 package com.teller.tellapp.data
 
-data class Withdraw(
+data class Trans(
     var accountId: Long,
     var amount: Double,
     var isCompleted: Boolean,

@@ -44,7 +44,7 @@ import androidx.navigation.NavController
 import com.google.gson.JsonObject
 import com.teller.tellapp.R
 import com.teller.tellapp.Route
-import com.teller.tellapp.data.Withdraw
+import com.teller.tellapp.data.Trans
 import com.teller.tellapp.network.EntityResponse
 import com.teller.tellapp.network.RetrofitClient
 import retrofit2.Call
@@ -143,7 +143,7 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String) {
                     modifier = Modifier.fillMaxWidth()
                         .height(60.dp)
                         .padding(start = 24.dp, end = 24.dp),
-                    enabled = index >= 3,  // Disable the first three text fields
+                    enabled = index >= 0,  // Disable the first three text fields
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Color.DarkGray,
                         unfocusedBorderColor = Color.Gray,
@@ -216,23 +216,30 @@ fun processTransaction(
 
     // Approve API method
     val call = service.approve(transactionJson)
-    call.enqueue(object : Callback<EntityResponse<Withdraw>> {
+    call.enqueue(object : Callback<EntityResponse<Trans>> {
         override fun onResponse(
-            call: Call<EntityResponse<Withdraw>>,
-            response: Response<EntityResponse<Withdraw>>
+            call: Call<EntityResponse<Trans>>,
+            response: Response<EntityResponse<Trans>>
         ) {
             if (response.isSuccessful) {
+                val entityResponse = response.body()
+
+                Log.d("TransactionApproval", response.body().toString())
                 Log.d("TransactionApproval", "Transaction approved successfully.")
 
-                val toast = Toast.makeText(context, "Transaction approved successfully.", Toast.LENGTH_LONG)
+                navController.navigate(Route.HomeScreen().name)
+
+//                val toast = Toast.makeText(context, "Transaction approved successfully.", Toast.LENGTH_LONG)
+//                toast.show()
+
+                val toast = Toast.makeText(context, entityResponse?.message ?: "", Toast.LENGTH_LONG)
                 toast.show()
+
                 // Delay for 3 seconds and then cancel the toast
                 Handler().postDelayed({
                     toast.cancel()
 
-                    navController.navigate(Route.HomeScreen().name)
-
-                }, 3000)
+                }, 4000)
             } else {
                 // Log approval failure
                 Log.e(
@@ -243,7 +250,7 @@ fun processTransaction(
         }
 
         override fun onFailure(
-            call: Call<EntityResponse<Withdraw>>,
+            call: Call<EntityResponse<Trans>>,
             t: Throwable
         ) {
             // Log approval failure due to network error

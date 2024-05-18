@@ -40,20 +40,20 @@ fun LoginTextField(
     borderColor: Color = Color.Gray
 
 ) {
-    var passwordVisible by remember { mutableStateOf(false) } // State variable to track password visibility
+    var passwordVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val BorderColor = Color(ContextCompat.getColor(context, R.color.maroon))
     val maroon = Color(0xFFA42C2C)
 
     OutlinedTextField(
-        modifier = modifier.fillMaxWidth(), // Ensure the TextField fills the available width
+        modifier = modifier.fillMaxWidth(),
         value = value,
         onValueChange = onValueChange,
         label = { Text(labelText) },
         leadingIcon = {
             leadingIcon?.let {
                 Icon(
-                    painter = painterResource(id = it), // Load drawable resource
+                    painter = painterResource(id = it),
                     contentDescription = null
                 )
             }
@@ -61,9 +61,9 @@ fun LoginTextField(
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         visualTransformation = if (showPasswordToggle && keyboardType == KeyboardType.Password) {
             if (passwordVisible) {
-                VisualTransformation.None // Show password
+                VisualTransformation.None
             } else {
-                PasswordVisualTransformation() // Hide password
+                PasswordVisualTransformation()
             }
         } else {
             visualTransformation
@@ -76,8 +76,8 @@ fun LoginTextField(
                     painter = painterResource(id = eyeIcon),
                     contentDescription = if (passwordVisible) "Hide Password" else "Show Password",
                     modifier = Modifier
-                        .clickable { passwordVisible = !passwordVisible } // Toggle password visibility
-                        .size(30.dp) // Set the size of the icon
+                        .clickable { passwordVisible = !passwordVisible }
+                        .size(30.dp)
                 )
             }
         },
@@ -94,7 +94,7 @@ fun PrevTextField() {
         labelText = "Password",
         keyboardType = KeyboardType.Password,
         showPasswordToggle = true,
-        leadingIcon = R.drawable.person_24 // Example of passing a drawable resource ID
+        leadingIcon = R.drawable.person_24
 
     )
 }

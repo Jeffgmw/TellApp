@@ -33,7 +33,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -86,8 +85,6 @@ fun LoginScreen(onLoginClick: () -> Unit,
 
     var isLoading by rememberSaveable { mutableStateOf(false) }
 
-    val context = LocalContext.current
-
     val grayEq = Color(0xFFDBD4D4)
     val maroon = Color(0xFFA42C2C)
 
@@ -137,21 +134,11 @@ fun LoginScreen(onLoginClick: () -> Unit,
         Text(
             text = "Teller Automation",
             modifier = Modifier.padding(vertical = defaultPadding),
-//            style = MaterialTheme.typography.h5, // or any other suitable body text style
             style = MaterialTheme.typography.h5.copy(color = textColor)
 
         )
 
         Spacer(modifier = Modifier.height(30.dp))
-
-        // Display the error message if showError is true -defined in the performLogin()
-//        if (showError) {
-//            Text(
-//                text = "Wrong credentials. Please try again.",
-//                color = colorResource(id = R.color.maroon),
-//                modifier = Modifier.padding(top = 8.dp)
-//            )
-//        }
 
         if (showError) {
             Text(
@@ -210,7 +197,6 @@ fun LoginScreen(onLoginClick: () -> Unit,
         }
         Spacer(Modifier.height(itemSpacing))
 
-        /// Function to handle login
         fun performLogin() {
             isLoading = true
             val loginRequest = User(username = userName, password = password)
@@ -290,13 +276,13 @@ fun LoginScreen(onLoginClick: () -> Unit,
         ) {
             Text(
                 text = "Don't have an Account?",
-                color = textColor, // Set text color here
+                color = textColor,
             )
             Spacer(Modifier.width(itemSpacing))
             TextButton(onClick = onSignUpClick) {
                 Text(
                     text = "Sign Up",
-                    color = textColor, // Set text color here
+                    color = textColor,
                 )
             }
         }

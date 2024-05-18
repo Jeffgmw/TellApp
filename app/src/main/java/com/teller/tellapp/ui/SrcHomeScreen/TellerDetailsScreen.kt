@@ -1,4 +1,4 @@
-package com.teller.tellapp.ui
+package com.teller.tellapp.ui.SrcHomeScreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues

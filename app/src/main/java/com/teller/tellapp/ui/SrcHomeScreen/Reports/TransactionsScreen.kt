@@ -306,7 +306,7 @@ fun DepositTransactions() {
 
 @Composable
 fun WithdrawalTransactions() {
-    var selectedIndex by remember { mutableStateOf(-1) } // Track selected index
+    var selectedIndex by remember { mutableStateOf(-1) }
 
     LazyColumn {
         itemsIndexed(WithdrawalTransactionData) { index, transaction ->
@@ -386,7 +386,7 @@ fun TransactionRow(transaction: Transaction, onClick: () -> Unit, isSelected: Bo
             modifier = Modifier
                 .weight(0.8f)
                 .padding(end = 4.dp),
-            textAlign = TextAlign.Center// s
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -484,14 +484,12 @@ fun downloadTransactions(context: Context) {
         // Close the document
         document.close()
 
-        // Log the storage directory
         Log.d("DownloadTransactions", "File saved to: ${file.absolutePath}")
 
-        // Show a success message
         Toast.makeText(context, "Transactions downloaded successfully", Toast.LENGTH_SHORT).show()
     } catch (e: Exception) {
         e.printStackTrace()
-        // Show an error message if any exception occurs
+
         Toast.makeText(context, "Error downloading transactions", Toast.LENGTH_SHORT).show()
     }
 }

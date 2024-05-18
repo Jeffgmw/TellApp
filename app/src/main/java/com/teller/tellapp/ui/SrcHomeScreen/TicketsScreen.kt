@@ -68,7 +68,6 @@ fun TicketsPage() {
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Table header with padding
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -90,7 +89,7 @@ fun TicketsPage() {
                     }
                 }
 
-                Spacer(modifier = Modifier.height(4.dp)) // Add space between header and data rows
+                Spacer(modifier = Modifier.height(4.dp))
 
                 DataRows(tickets)
 

@@ -107,7 +107,7 @@ fun ReportsContent(navController: NavController, paddingValues: PaddingValues) {
                 shape = RoundedCornerShape(10.dp),
                 colors = buttonColors
             ) {
-                Text("Cash Withdrawal", color = Color.Black)
+                Text("Cash Transactions", color = Color.Black)
             }
             Button(
                 onClick = {navController.navigate(Route.TransactionsScreen().name) },
@@ -118,7 +118,7 @@ fun ReportsContent(navController: NavController, paddingValues: PaddingValues) {
                 shape = RoundedCornerShape(10.dp),
                 colors = buttonColors
             ) {
-                Text("Cash Deposit", color = Color.Black)
+                Text("Service Reports", color = Color.Black)
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -135,7 +135,7 @@ fun ReportsContent(navController: NavController, paddingValues: PaddingValues) {
                 shape = RoundedCornerShape(10.dp),
                 colors = buttonColors
             ) {
-                Text("Cash Hdentill", color = Color.Black)
+                Text("Cash Withdrawals", color = Color.Black)
             }
             Button(
                 onClick = { navController.navigate(Route.TransactionsScreen().name) },
@@ -146,7 +146,7 @@ fun ReportsContent(navController: NavController, paddingValues: PaddingValues) {
                 shape = RoundedCornerShape(10.dp),
                 colors = buttonColors
             ) {
-                Text("Cash Summary", color = Color.Black)
+                Text("Cash Deposits", color = Color.Black)
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -163,7 +163,7 @@ fun ReportsContent(navController: NavController, paddingValues: PaddingValues) {
                 shape = RoundedCornerShape(10.dp),
                 colors = buttonColors
             ) {
-                Text("Service Report", color = Color.Black)
+                Text("Denominations", color = Color.Black)
             }
             Button(
                 onClick = { /* Action for Cash Summary button */ },
@@ -174,7 +174,7 @@ fun ReportsContent(navController: NavController, paddingValues: PaddingValues) {
                 shape = RoundedCornerShape(10.dp),
                 colors = buttonColors
             ) {
-                Text("GLs Reports", color = Color.Black)
+                Text("Cash Summary", color = Color.Black)
             }
         }
     }
