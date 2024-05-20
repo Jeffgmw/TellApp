@@ -3,7 +3,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
@@ -27,14 +26,14 @@ fun TopButtons(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Button(
             onClick = { navController.navigate(Route.TicketsScreen().name) },
             colors = buttonColors,
             modifier = Modifier
-                .width(120.dp)
+                .weight(1f)
         ) {
             Text(
                 text = "Tickets",
@@ -45,7 +44,7 @@ fun TopButtons(navController: NavController) {
             onClick = { navController.navigate(Route.ReferralsScreen().name) },
             colors = buttonColors,
             modifier = Modifier
-                .width(120.dp)
+                .weight(1f)
         ) {
             Text(
                 text = "Referrals",
@@ -57,7 +56,7 @@ fun TopButtons(navController: NavController) {
             onClick = { navController.navigate(Route.ReportsScreen().name) },
             colors = buttonColors,
             modifier = Modifier
-                .width(120.dp)
+                .weight(1f)
         ) {
             Text(
                 text = "Reports",

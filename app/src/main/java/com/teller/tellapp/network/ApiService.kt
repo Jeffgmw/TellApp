@@ -5,11 +5,13 @@ import com.teller.tellapp.data.ChangePassword
 import com.teller.tellapp.data.Customer
 import com.teller.tellapp.data.GenLedger
 import com.teller.tellapp.data.Referral
+import com.teller.tellapp.data.ReferralTrans
 import com.teller.tellapp.data.Teller
 import com.teller.tellapp.data.Trans
 import com.teller.tellapp.data.Transaction
 import com.teller.tellapp.data.User
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -43,5 +45,8 @@ interface ApiService {
 
     @GET("Transaction/getAllTransactions")
     suspend fun getAllTransactions(): EntityResponse<List<Transaction>>
+
+    @GET("referral/getAllReferrals")
+    suspend fun getAllReferrals(): Response<EntityResponse<List<ReferralTrans>>>
 
 }
