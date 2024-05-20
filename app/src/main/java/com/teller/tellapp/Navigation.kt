@@ -18,7 +18,7 @@ import com.teller.tellapp.ui.SrcHomeScreen.ChangePasswordScreen
 import com.teller.tellapp.ui.SrcHomeScreen.CustomerDetailsScreen
 import com.teller.tellapp.ui.SrcHomeScreen.GLTransactionsPage
 import com.teller.tellapp.ui.Home.HomeScreen
-import com.teller.tellapp.ui.QrCode.QRCodeScanner
+import com.teller.tellapp.ui.Home.QrCode.QRCodeScanner
 import com.teller.tellapp.ui.SrcHomeScreen.ReferralsPage
 import com.teller.tellapp.ui.SrcHomeScreen.TellerDetails
 import com.teller.tellapp.ui.login.ForgotPasswordPage

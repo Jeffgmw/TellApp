@@ -136,5 +136,8 @@ dependencies {
 
     implementation 'com.itextpdf:itextpdf:5.5.13.3'
 
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0'
+
+
 
 }

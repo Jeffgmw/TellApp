@@ -1,4 +1,4 @@
-package com.teller.tellapp.ui.QrCode
+package com.teller.tellapp.ui.Home.QrCode
 
 import android.Manifest
 import android.content.pm.PackageManager

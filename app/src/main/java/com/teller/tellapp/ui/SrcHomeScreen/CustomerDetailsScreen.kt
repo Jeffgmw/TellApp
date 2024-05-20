@@ -161,7 +161,7 @@ fun CustomerDetailsScreen(navController: NavController, searchQuery: String) {
                                 Spacer(modifier = Modifier.height(15.dp))
 
                                 Text(
-                                    text = "Accounts:",
+                                    text = "Accounts And Transactions",
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = textColor,
@@ -172,6 +172,18 @@ fun CustomerDetailsScreen(navController: NavController, searchQuery: String) {
                                 )
 
                                 customer.customerAccount.forEach { account ->
+                                    Spacer(modifier = Modifier.height(15.dp))
+
+                                    Text(
+                                        text = "Account",
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = textColor,
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(10.dp))
+                                            .background(highlightColor)
+                                            .padding(4.dp)
+                                    )
                                     Text(text = "Account Number: ${account.accno}", color = textColor)
                                     Text(text = "Balance: ${account.balance}", color = textColor)
 
