@@ -1,5 +1,6 @@
 package com.teller.tellapp.data
 
+
 data class Customer(
     val id: Long,
     val firstName: String,
@@ -29,5 +30,12 @@ data class Transaction(
     val depositer: String?,
     val depositerNo: String?,
     val depositerId: String?,
-    val completed: Boolean
+    val completed: Boolean,
+
+    val customer: Customer?,
+    val customerAccount: CustomerAccount?
+)
+
+data class TransactionResponse(
+    val data: List<Transaction>
 )

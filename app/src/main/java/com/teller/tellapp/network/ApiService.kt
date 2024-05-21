@@ -8,7 +8,7 @@ import com.teller.tellapp.data.Referral
 import com.teller.tellapp.data.ReferralTrans
 import com.teller.tellapp.data.Teller
 import com.teller.tellapp.data.Trans
-import com.teller.tellapp.data.Transaction
+import com.teller.tellapp.data.TransactionResponse
 import com.teller.tellapp.data.User
 import retrofit2.Call
 import retrofit2.Response
@@ -44,9 +44,9 @@ interface ApiService {
     fun retrench(@Query("tellerId") tellerId: Long, @Body referral: Referral): Call<EntityResponse<Any>>
 
     @GET("Transaction/getAllTransactions")
-    suspend fun getAllTransactions(): EntityResponse<List<Transaction>>
+    suspend fun getAllTransactions(): Response<TransactionResponse>
 
-    @GET("referral/getAllReferrals")
+    @GET("referral/getUnapprovedReferrals")
     suspend fun getAllReferrals(): Response<EntityResponse<List<ReferralTrans>>>
 
 }

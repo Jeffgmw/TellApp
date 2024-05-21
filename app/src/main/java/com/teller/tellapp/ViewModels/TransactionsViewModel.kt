@@ -1,17 +1,26 @@
 package com.teller.tellapp.ViewModels
+
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.teller.tellapp.data.Transaction
 import com.teller.tellapp.network.RetrofitClient
 import kotlinx.coroutines.launch
 
+class TransactionViewModel : ViewModel() {
 
-class TransactionsViewModel : ViewModel() {
-    private val _transactions = MutableLiveData<List<Transaction>>()
-    val transactions: LiveData<List<Transaction>> get() = _transactions
+    private val apiService = RetrofitClient.instance
+
+    var depositTransactions = mutableStateListOf<Transaction>()
+        private set
+
+    var withdrawalTransactions = mutableStateListOf<Transaction>()
+        private set
+
+    var isLoading = mutableStateOf(true)
+        private set
 
     init {
         fetchTransactions()
@@ -20,16 +29,37 @@ class TransactionsViewModel : ViewModel() {
     private fun fetchTransactions() {
         viewModelScope.launch {
             try {
-                val response = RetrofitClient.instance.getAllTransactions()
-                if (response.statusCode == 200) {
-                    _transactions.value = response.entity ?: emptyList()
+                val response = apiService.getAllTransactions()
+
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+
+                    if (responseBody != null) {
+                        val transactions = responseBody.data ?: emptyList()
+
+                        transactions.forEach { transaction ->
+                            val updatedTransaction = transaction.copy(
+                                customer = transaction.customer,
+                                customerAccount = transaction.customerAccount
+                            )
+                            if (transaction.transactionType == "Deposit") {
+                                depositTransactions.add(updatedTransaction)
+                            } else if (transaction.transactionType == "Withdrawal") {
+                                withdrawalTransactions.add(updatedTransaction)
+                            }
+                        }
+                    } else {
+                        // Handle empty response body
+                        Log.e("TransactionViewModel", "Empty response body")
+                    }
                 } else {
-                    // Handle error case
-                    Log.e("TransactionsViewModel", "Error: ${response.message}")
+                    // Handle unsuccessful response
+                    Log.e("TransactionViewModel", "Failed to fetch transactions: ${response.errorBody()?.string()}")
                 }
             } catch (e: Exception) {
-                // Handle exception
-                Log.e("TransactionsViewModel", "Exception: ${e.message}")
+                e.printStackTrace()
+            } finally {
+                isLoading.value = false
             }
         }
     }

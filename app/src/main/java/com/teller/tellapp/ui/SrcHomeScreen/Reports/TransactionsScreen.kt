@@ -13,6 +13,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
@@ -53,68 +55,87 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.itextpdf.text.Document
 import com.itextpdf.text.Paragraph
 import com.itextpdf.text.pdf.PdfWriter
 import com.teller.tellapp.R
+import com.teller.tellapp.ViewModels.TransactionViewModel
+import com.teller.tellapp.data.Transaction
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@Composable
-fun TransactionsPage(navController: NavController) {
 
+@Composable
+fun TransactionsPage(navController: NavController, viewModel: TransactionViewModel = viewModel()) {
     val context = LocalContext.current
-    // Request permission to write to external storage
+    val isLoading by viewModel.isLoading
+
     val requestPermissionLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                // Permission granted, proceed with download
-                downloadTransactions(context)
+                downloadTransactions(context, viewModel)
             } else {
                 Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show()
             }
         }
 
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                backgroundColor = colorResource(id = R.color.maroon),
-                modifier = Modifier
-                    .padding(start = 4.dp, end = 4.dp, top = 4.dp)
-                    .clip(shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
-                elevation = AppBarDefaults.TopAppBarElevation
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Transactions",
-                        color = Color.White,
-                        style = TextStyle(fontSize = 24.sp),
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp, end = 8.dp)
-                    )
-                    DownloadButton(requestPermissionLauncher, Modifier.padding(end = 8.dp))
-                }
-            }
-        },
-        backgroundColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
-        content = { paddingValues ->
-            TransactionsContent(paddingValues)
+    if (isLoading) {
+        // Show a loading indicator while data is being fetched
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
         }
-    )
+    } else {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    backgroundColor = colorResource(id = R.color.maroon),
+                    modifier = Modifier
+                        .padding(start = 4.dp, end = 4.dp, top = 4.dp)
+                        .clip(shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+                    elevation = AppBarDefaults.TopAppBarElevation
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Transactions",
+                            color = Color.White,
+                            style = TextStyle(fontSize = 24.sp),
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 8.dp, end = 8.dp)
+                        )
+                        DownloadButton(requestPermissionLauncher = requestPermissionLauncher, viewModel = viewModel)
+
+                    }
+                }
+            },
+            backgroundColor = if (isSystemInDarkTheme()) Color.Black else Color.White,
+            content = { paddingValues ->
+                TransactionsContent(
+                    paddingValues,
+                    viewModel.depositTransactions,
+                    viewModel.withdrawalTransactions
+                )
+            }
+        )
+    }
 }
 
+
 @Composable
-fun TransactionsContent(paddingValues: PaddingValues) {
+fun TransactionsContent(
+    paddingValues: PaddingValues,
+    depositTransactions: List<Transaction>,
+    withdrawalTransactions: List<Transaction>
+) {
     var isDepositExpanded by remember { mutableStateOf(true) }
     var isWithdrawalExpanded by remember { mutableStateOf(true) }
 
@@ -138,7 +159,7 @@ fun TransactionsContent(paddingValues: PaddingValues) {
             modifier = Modifier.fillMaxWidth()
                 .background(colorResource(id = R.color.grayEq), shape = RoundedCornerShape(8.dp)),
             shape = RoundedCornerShape(10),
-           colors = ButtonDefaults.buttonColors(
+            colors = ButtonDefaults.buttonColors(
                 backgroundColor = colorResource(id = R.color.grayEq),
             ),
             onClick = {
@@ -188,7 +209,7 @@ fun TransactionsContent(paddingValues: PaddingValues) {
         }
         if (isDepositExpanded) {
             HeaderRow()
-            DepositTransactions()
+            DepositTransactions(depositTransactions)
         }
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -220,14 +241,13 @@ fun TransactionsContent(paddingValues: PaddingValues) {
         }
         if (isWithdrawalExpanded) {
             HeaderRow()
-            WithdrawalTransactions()
+            WithdrawalTransactions(withdrawalTransactions)
         }
     }
 }
 
 @Composable
 fun HeaderRow() {
-
     val textColor = if (isSystemInDarkTheme()) {
         Color.White
     } else {
@@ -243,14 +263,14 @@ fun HeaderRow() {
         Text(
             "Name",
             color = textColor,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1.5f),
             fontWeight = FontWeight.Bold
 
         )
         Text(
             "Account",
             color = textColor,
-            modifier = Modifier.weight(1.3f),
+            modifier = Modifier.weight(1.5f),
             fontWeight = FontWeight.Bold
         )
         Text(
@@ -260,69 +280,30 @@ fun HeaderRow() {
             fontWeight = FontWeight.Bold
         )
         Text(
-            "Currency",
+            "Tran Type",
+            color = textColor,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            "Date",
             color = textColor,
             modifier = Modifier.weight(1.3f),
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
-        Text(
-            "Time",
-            color = textColor,
-            modifier = Modifier.weight(0.8f),
             fontWeight = FontWeight.Bold
         )
         Text(
-            "Serve",
+            "Status",
             color = textColor,
-            modifier = Modifier.weight(0.8f),
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold
         )
-        Text(
-            "Type",
-            color = textColor,
-            modifier = Modifier.weight(0.8f),
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
     }
 }
 
 @Composable
-fun DepositTransactions() {
-    var selectedIndex by remember { mutableStateOf(-1) } // Track selected index
-
-    LazyColumn {
-        itemsIndexed(DepositTransactionData) { index, transaction ->
-            TransactionRow(
-                transaction = transaction,
-                onClick = { selectedIndex = index },
-                isSelected = index == selectedIndex,
-                selectedIndex = selectedIndex
-            )
-        }
-    }
-}
-
-@Composable
-fun WithdrawalTransactions() {
-    var selectedIndex by remember { mutableStateOf(-1) }
-
-    LazyColumn {
-        itemsIndexed(WithdrawalTransactionData) { index, transaction ->
-            TransactionRow(
-                transaction = transaction,
-                onClick = { selectedIndex = index },
-                isSelected = index == selectedIndex,
-                selectedIndex = selectedIndex
-            )
-        }
-    }
-}
-
-
-@Composable
-fun TransactionRow(transaction: Transaction, onClick: () -> Unit, isSelected: Boolean, selectedIndex: Int) {
+fun TransactionRow(transaction: Transaction, onClick: () -> Unit, isSelected: Boolean) {
     val backgroundColor = if (isSelected) Color.LightGray else Color.Transparent
     val textColor = if (isSystemInDarkTheme()) {
         Color.White
@@ -335,87 +316,90 @@ fun TransactionRow(transaction: Transaction, onClick: () -> Unit, isSelected: Bo
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(vertical = 4.dp)
-            .background(if (isSelected && selectedIndex == transaction.name.toIntOrNull()) Color.DarkGray else Color.Transparent),
+            .background(backgroundColor),
     ) {
         Text(
-            text = transaction.name,
+            text = "${transaction.customer?.firstName} ${transaction.customer?.lastName}",
             color = textColor,
             modifier = Modifier
-                .weight(1f)
-                .padding(end = 4.dp) // Add padding between columns
-        )
-        Text(
-            text = transaction.account,
-            color = textColor,
-            modifier = Modifier
-                .weight(1.3f)
+                .weight(1.5f)
                 .padding(end = 4.dp)
         )
         Text(
-            text = transaction.amount,
+            text = transaction.customerAccount?.accno.toString(),
+            color = textColor,
+            modifier = Modifier
+                .weight(1.5f)
+                .padding(end = 4.dp)
+        )
+        Text(
+            text = transaction.amount.toString(),
             color = textColor,
             modifier = Modifier
                 .weight(1f)
                 .padding(end = 4.dp)
         )
         Text(
-            text = transaction.currency,
+            text = transaction.transactionType,
             color = textColor,
             modifier = Modifier
-                .weight(1.3f)
+                .weight(1f)
                 .padding(end = 4.dp),
             textAlign = TextAlign.Center
         )
         Text(
-            text = transaction.time,
+            text = transaction.date,
             color = textColor,
             modifier = Modifier
-                .weight(0.8f)
+                .weight(1.3f)
                 .padding(end = 4.dp)
         )
         Text(
-            text = transaction.serve,
+            text = if (transaction.completed) "Completed" else "Pending",
             color = textColor,
             modifier = Modifier
-                .weight(0.8f)
-                .padding(end = 4.dp)
-        )
-        Text(
-            text = transaction.type,
-            color = textColor,
-            modifier = Modifier
-                .weight(0.8f)
+                .weight(1f)
                 .padding(end = 4.dp),
             textAlign = TextAlign.Center
         )
     }
 }
 
+@Composable
+fun DepositTransactions(depositTransactions: List<Transaction>) {
+    var selectedIndex by remember { mutableStateOf(-1) }
 
-data class Transaction(
-    val name: String,
-    val account: String,
-    val amount: String,
-    val currency: String,
-    val time: String,
-    val serve: String,
-    val type: String
-)
+    LazyColumn {
+        itemsIndexed(depositTransactions) { index, transaction ->
+            TransactionRow(
+                transaction = transaction,
+                onClick = { selectedIndex = index },
+                isSelected = index == selectedIndex
+            )
+        }
+    }
+}
 
-val DepositTransactionData = listOf(
-    Transaction("John Doe", "123456", "$500", "KES", "10:00 AM", "Alice", "Dr"),
-    Transaction("Jane Smith", "987654", "$1000", "KES", "11:30 AM", "Bob", "Cr")
-)
+@Composable
+fun WithdrawalTransactions(withdrawalTransactions: List<Transaction>) {
+    var selectedIndex by remember { mutableStateOf(-1) }
 
-val WithdrawalTransactionData = listOf(
-    Transaction("Alice John", "555555", "$300", "KES", "9:45 AM", "Peter", "Dr"),
-    Transaction("Bob Brown", "664616", "$700", "KES", "12:15 PM", "David", "Cr")
-)
+    LazyColumn {
+        itemsIndexed(withdrawalTransactions) { index, transaction ->
+            TransactionRow(
+                transaction = transaction,
+                onClick = { selectedIndex = index },
+                isSelected = index == selectedIndex
+            )
+        }
+    }
+}
 
 @Composable
 fun DownloadButton(
     requestPermissionLauncher: ManagedActivityResultLauncher<String, Boolean>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: TransactionViewModel
 ) {
     val context = LocalContext.current
 
@@ -429,7 +413,7 @@ fun DownloadButton(
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
                 // Permission granted, proceed with download
-                downloadTransactions(context)
+                downloadTransactions(context, viewModel)
             } else {
                 // Permission not granted, request it
                 requestPermissionLauncher.launch(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE).toString())
@@ -447,41 +431,33 @@ fun DownloadButton(
     )
 }
 
-fun downloadTransactions(context: Context) {
+fun downloadTransactions(context: Context, viewModel: TransactionViewModel) {
     val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
     val currentTimeStamp = dateFormat.format(Date())
 
     val fileName = "Transactions_$currentTimeStamp.pdf"
 
-    // Get the directory for internal storage
     val directory = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
 
-    // Create the file object within the internal storage Downloads directory
     val file = File(directory, fileName)
 
     try {
-        // Create a new Document
         val document = Document()
 
-        // Create a PdfWriter instance
         PdfWriter.getInstance(document, FileOutputStream(file))
 
-        // Open the document
         document.open()
 
-        // Deposit transactions
         document.add(Paragraph("Deposit Transactions"))
-        for (transaction in DepositTransactionData) {
+        for (transaction in viewModel.depositTransactions) {
             document.add(Paragraph(transaction.toString()))
         }
 
-        // Withdrawal transactions
         document.add(Paragraph("Withdrawal Transactions"))
-        for (transaction in WithdrawalTransactionData) {
+        for (transaction in viewModel.withdrawalTransactions) {
             document.add(Paragraph(transaction.toString()))
         }
 
-        // Close the document
         document.close()
 
         Log.d("DownloadTransactions", "File saved to: ${file.absolutePath}")
