@@ -96,11 +96,11 @@ fun ReferralsPage(referralsViewModel: ReferralsViewModel = viewModel()) {
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            TableCell(text = referral.referralId ?: "N/A")
-                            TableCell(text = referral.referralType ?: "N/A")
+                            TableCell(text = referral.referralId ?: "NULL")
+                            TableCell(text = referral.referralType ?: "NULL")
                             TableCell(text = referral.amount.toString())
                             TableCell(text = referral.completed.toString())
-                            TableCell(text = referral.date ?: "N/A")
+                            TableCell(text = referral.date ?: "NULL")
                             TableCell(text = referral.sourceAcc.toString())
                             TableCell(text = referral.destAcc.toString())
                         }

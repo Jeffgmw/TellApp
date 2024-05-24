@@ -23,6 +23,7 @@ data class Transaction(
     val id: Long,
     val transactionId: String,
     val amount: Double,
+    val currency: String,
     val date: String,
     val imageData: String,
     val accountId: Long,

@@ -71,14 +71,14 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String) {
         val (key, value) = it.split(":")
         // Map key names to match the property names in the Withdraw data class
         when (key.trim()) {
-            "id" -> "id" to value.trim()
-            "transactionID" -> "transactionId" to value.trim()
-            "amount" -> "amount" to value.trim()
-            "date" -> "date" to value.trim()
-            "isCompleted" -> "isCompleted" to value.trim()
-            "imageData" -> "imageData" to value.trim()
-            "account_Id" -> "accountId" to value.trim()
-            "transactionType" -> "transactionType" to value.trim()
+            "Id" -> "id" to value.trim()
+            "TransactionID" -> "transactionId" to value.trim()
+            "Amount" -> "amount" to value.trim()
+            "Date" -> "date" to value.trim()
+//            "IsCompleted" -> "isCompleted" to value.trim()
+//            "ImageData" -> "imageData" to value.trim()
+//            "Account_Id" -> "accountId" to value.trim()
+            "TransactionType" -> "transactionType" to value.trim()
             else -> key.trim() to value.trim()
         }
     }
@@ -197,12 +197,12 @@ fun processTransaction(
 
     // JSON object with required fields and values
     val transactionJson = JsonObject().apply {
-        addProperty("account_id", formData["accountId"].orEmpty().toLongOrNull() ?: 0L)
+//        addProperty("account_id", formData["accountId"].orEmpty().toLongOrNull() ?: 0L)
         addProperty("amount", formData["amount"].orEmpty().toDoubleOrNull() ?: 0.0)
-        addProperty("completed", formData["isComplete"].orEmpty().toBoolean())
+//        addProperty("completed", formData["isComplete"].orEmpty().toBoolean())
         addProperty("date", formatDate(formData["date"].orEmpty()))
         addProperty("id", 0)  // Assuming ID is not relevant for approval
-        addProperty("imageData", formData["imageData"].orEmpty())
+//        addProperty("imageData", formData["imageData"].orEmpty())
         addProperty("transactionId", formData["transactionId"].orEmpty())
         addProperty("transactionType", formData["transactionType"].toString())
     }
@@ -228,9 +228,6 @@ fun processTransaction(
                 Log.d("TransactionApproval", "Transaction approved successfully.")
 
                 navController.navigate(Route.HomeScreen().name)
-
-//                val toast = Toast.makeText(context, "Transaction approved successfully.", Toast.LENGTH_LONG)
-//                toast.show()
 
                 val toast = Toast.makeText(context, entityResponse?.message ?: "", Toast.LENGTH_LONG)
                 toast.show()

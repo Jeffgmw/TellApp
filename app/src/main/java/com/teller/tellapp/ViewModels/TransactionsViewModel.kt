@@ -11,8 +11,6 @@ import kotlinx.coroutines.launch
 
 class TransactionViewModel : ViewModel() {
 
-    private val apiService = RetrofitClient.instance
-
     var depositTransactions = mutableStateListOf<Transaction>()
         private set
 
@@ -29,7 +27,7 @@ class TransactionViewModel : ViewModel() {
     private fun fetchTransactions() {
         viewModelScope.launch {
             try {
-                val response = apiService.getAllTransactions()
+                val response = RetrofitClient.instance.getAllTransactions()
 
                 if (response.isSuccessful) {
                     val responseBody = response.body()

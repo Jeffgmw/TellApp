@@ -2,6 +2,7 @@ package com.teller.tellapp.ui.SrcHomeScreen
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -18,12 +19,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -54,6 +60,7 @@ fun CustomerDetailsScreen(navController: NavController, searchQuery: String) {
     var customerDetails by remember { mutableStateOf<Customer?>(null) }
     var loading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    val expandedStates = remember { mutableStateMapOf<Long, Boolean>() }
 
     LaunchedEffect(searchQuery) {
         val apiService = RetrofitClient.instance
@@ -165,9 +172,8 @@ fun CustomerDetailsScreen(navController: NavController, searchQuery: String) {
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = textColor,
+//                                    style = TextStyle(textDecoration = TextDecoration.Underline),
                                     modifier = Modifier
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(highlightColor)
                                         .padding(4.dp)
                                 )
 
@@ -189,50 +195,67 @@ fun CustomerDetailsScreen(navController: NavController, searchQuery: String) {
 
                                     Spacer(modifier = Modifier.height(15.dp))
 
-                                    Text(
-                                        text = "Transactions:",
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = textColor,
+                                    val expanded = expandedStates[account.accno] ?: false
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier
+                                            .fillMaxWidth()
                                             .clip(RoundedCornerShape(10.dp))
                                             .background(highlightColor)
+                                            .clickable { expandedStates[account.accno] = !expanded }
                                             .padding(4.dp)
-                                    )
-
-                                    Column(
-                                        modifier = Modifier.horizontalScroll(rememberScrollState())
                                     ) {
-                                        // Table Header
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(4.dp)
-                                        ) {
-                                            TableCell("Transaction ID", textColor, 100.dp, FontWeight.Bold)
-                                            TableCell("Amount", textColor, 70.dp, FontWeight.Bold)
-                                            TableCell("Date", textColor, 150.dp, FontWeight.Bold)
-                                            TableCell("Type", textColor, 70.dp, FontWeight.Bold)
-                                            TableCell("Completed", textColor, 100.dp, FontWeight.Bold)
-                                            TableCell("Depositer", textColor, 70.dp, FontWeight.Bold)
-                                            TableCell("Depositer No", textColor, 100.dp, FontWeight.Bold)
-                                            TableCell("Depositer ID", textColor, 100.dp, FontWeight.Bold)
-                                        }
+                                        Text(
+                                            text = "Show Transactions:",
+                                            fontSize = 18.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = textColor,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                        Icon(
+                                            imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                            contentDescription = if (expanded) "Collapse" else "Expand",
+                                            tint = textColor
+                                        )
+                                    }
 
-                                        account.transaction.forEach { transaction ->
+                                    if (expanded) {
+                                        Column(
+                                            modifier = Modifier.horizontalScroll(rememberScrollState())
+                                        ) {
+                                            // Table Header
                                             Row(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .padding(4.dp)
                                             ) {
-                                                TableCell(transaction.transactionId.toString(), textColor, 100.dp)
-                                                TableCell(transaction.amount.toString(), textColor, 70.dp)
-                                                TableCell(formatDateTime(transaction.date), textColor, 150.dp)
-                                                TableCell(transaction.transactionType, textColor, 70.dp)
-                                                TableCell(transaction.completed.toString(), textColor, 100.dp)
-                                                TableCell(transaction.depositer ?: "", textColor, 70.dp)
-                                                TableCell(transaction.depositerNo ?: "", textColor, 100.dp)
-                                                TableCell(transaction.depositerId?.toString() ?: "", textColor, 100.dp)
+                                                TableCell("Transaction ID", textColor, 100.dp, FontWeight.Bold)
+                                                TableCell("Amount", textColor, 70.dp, FontWeight.Bold)
+                                                TableCell("Date", textColor, 150.dp, FontWeight.Bold)
+                                                TableCell("Type", textColor, 70.dp, FontWeight.Bold)
+                                                TableCell("Currency", textColor, 70.dp, FontWeight.Bold)
+                                                TableCell("Completed", textColor, 100.dp, FontWeight.Bold)
+                                                TableCell("Depositer", textColor, 70.dp, FontWeight.Bold)
+                                                TableCell("Depositer No", textColor, 100.dp, FontWeight.Bold)
+                                                TableCell("Depositer ID", textColor, 100.dp, FontWeight.Bold)
+                                            }
+
+                                            account.transaction.forEach { transaction ->
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(4.dp)
+                                                ) {
+                                                    TableCell(transaction.transactionId.toString(), textColor, 100.dp)
+                                                    TableCell(transaction.amount.toString(), textColor, 70.dp)
+                                                    TableCell(formatDateTime(transaction.date), textColor, 150.dp)
+                                                    TableCell(transaction.transactionType, textColor, 70.dp)
+                                                    TableCell(transaction.currency ?: "NULL", textColor, 70.dp)
+                                                    TableCell(transaction.completed.toString(), textColor, 100.dp)
+                                                    TableCell(transaction.depositer ?: "NULL", textColor, 70.dp)
+                                                    TableCell(transaction.depositerNo ?: "NULL", textColor, 100.dp)
+                                                    TableCell(transaction.depositerId?.toString() ?: "NULL", textColor, 100.dp)
+                                                }
                                             }
                                         }
                                     }

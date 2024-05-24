@@ -84,7 +84,7 @@ fun TellerDetailsContent(teller: Teller, padding: PaddingValues) {
         Text(text = "Email: ${teller.email}", style = TextStyle(fontSize = 17.sp))
         Text(text = "ID: ${teller.id}", style = TextStyle(fontSize = 17.sp))
         Text(text = "National ID: ${teller.national_id}", style = TextStyle(fontSize = 17.sp))
-        Text(text = "PF Number: ${teller.pfnumber}", style = TextStyle(fontSize = 17.sp))
+        Text(text = "PF Number: ${teller.pfNumber}", style = TextStyle(fontSize = 17.sp))
     }
 }
 

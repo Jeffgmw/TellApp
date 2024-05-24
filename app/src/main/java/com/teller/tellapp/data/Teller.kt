@@ -5,5 +5,5 @@ data class Teller(
     val id: Long,
     val name: String,
     val national_id: Long,
-    val pfnumber: Long
+    val pfNumber: Long
 )
