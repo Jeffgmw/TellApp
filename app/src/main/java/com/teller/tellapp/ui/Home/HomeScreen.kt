@@ -64,7 +64,6 @@ fun HomeScreen(navController: NavController, openDrawer: () -> Unit)
 
                     BankLogo()
 
-                    // Spacer to push DateAndTime to the right
                     Spacer(modifier = Modifier.weight(1f))
 
                     val context = LocalContext.current
@@ -113,7 +112,6 @@ fun HomeScreen(navController: NavController, openDrawer: () -> Unit)
         }
     }
 }
-
 
 
 @Composable

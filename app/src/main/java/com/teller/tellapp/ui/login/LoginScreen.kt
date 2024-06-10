@@ -13,13 +13,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Checkbox
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -45,10 +43,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.teller.tellapp.R
-import com.teller.tellapp.Route
 import com.teller.tellapp.data.User
 import com.teller.tellapp.network.EntityResponse
 import com.teller.tellapp.network.RetrofitClient
+import com.teller.tellapp.ui.navigation.Route
 import com.teller.tellapp.ui.theme.TellAppTheme
 import retrofit2.Call
 import retrofit2.Callback
@@ -60,7 +58,6 @@ val itemSpacing = 5.dp
 
 @Composable
 fun LoginScreen(onLoginClick: () -> Unit,
-                onSignUpClick: () -> Unit,
                 onForgotPasswordClick: () -> Unit,
                 navController: NavHostController
 ) {
@@ -182,11 +179,8 @@ fun LoginScreen(onLoginClick: () -> Unit,
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Checkbox(checked = checked, onCheckedChange = onCheckedChange)
-                Text(
-                    text = "Remember me",
-                    color = textColor
-                )
+
+
             }
             TextButton(onClick = onForgotPasswordClick) {
                 Text(
@@ -266,26 +260,6 @@ fun LoginScreen(onLoginClick: () -> Unit,
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(20.dp))
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp)
-        ) {
-            Text(
-                text = "Don't have an Account?",
-                color = textColor,
-            )
-            Spacer(Modifier.width(itemSpacing))
-            TextButton(onClick = onSignUpClick) {
-                Text(
-                    text = "Sign Up",
-                    color = textColor,
-                )
-            }
-        }
     }
 }
 
@@ -298,7 +272,6 @@ fun PrevLoginScreen() {
 
         LoginScreen(
             onLoginClick = { /*TODO*/ },
-            onSignUpClick = { /*TODO*/ },
             onForgotPasswordClick = { /*TODO*/ },
             navController = navController
         )

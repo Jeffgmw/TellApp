@@ -1,4 +1,4 @@
-package com.teller.tellapp.ui.Home.QrCode
+package com.teller.tellapp.ui.Home.QrCodeScanner
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -42,7 +42,7 @@ import com.google.zxing.DecodeHintType
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.PlanarYUVLuminanceSource
 import com.google.zxing.common.HybridBinarizer
-import com.teller.tellapp.Route
+import com.teller.tellapp.ui.navigation.Route
 import java.nio.ByteBuffer
 
 @Composable

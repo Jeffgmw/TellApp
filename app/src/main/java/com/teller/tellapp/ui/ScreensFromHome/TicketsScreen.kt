@@ -147,12 +147,12 @@ fun ClickableTicketRow(
 
 fun generateTicketData(): List<Ticket> {
     return listOf(
-        Ticket("001", "Service A", "$50", "10 mins"),
-        Ticket("002", "Service B", "$75", "15 mins"),
-        Ticket("003", "Service C", "$100", "20 mins"),
-        Ticket("004", "Service A", "$50", "10 mins"),
-        Ticket("005", "Service B", "$75", "15 mins"),
-        Ticket("006", "Service C", "$100", "20 mins")
+        Ticket("001", "Withdrawal", "40000", "10 mins"),
+        Ticket("002", "Deposit", "60000", "15 mins"),
+//        Ticket("003", "Deposit ", "10000", "20 mins"),
+//        Ticket("004", "Withdrawal A", "500", "10 mins"),
+//        Ticket("005", "Service B", "75", "15 mins"),
+//        Ticket("006", "Service C", "10000", "20 mins")
     )
 }
 

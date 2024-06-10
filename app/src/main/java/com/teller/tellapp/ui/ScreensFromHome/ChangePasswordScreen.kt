@@ -1,4 +1,4 @@
-package com.teller.tellapp.ui.SrcHomeScreen
+package com.teller.tellapp.ui.ScreensFromHome
 
 import android.widget.Toast
 import androidx.compose.foundation.Image

@@ -13,7 +13,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.teller.tellapp.R
-import com.teller.tellapp.Route
+import com.teller.tellapp.ui.navigation.Route
 
 
 @Composable

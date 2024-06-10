@@ -1,4 +1,4 @@
-package com.teller.tellapp.ui.SrcHomeScreen
+package com.teller.tellapp.ui.ScreensFromHome
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -34,10 +34,10 @@ fun GLTransactionsPage() {
     val backgroundColor = if (isSystemInDarkTheme()) Color.Black else Color.White
 
     val transactions = listOf(
-        TransactionRowData("2024-04-10 10:30", "1409876536", "400,000.00", "", "Teller1"),
-        TransactionRowData("2024-04-09 15:45", "1409876536", "", "200,000.00", "Teller1"),
-        TransactionRowData("2024-04-09 15:45", "1409876536", "", "400,000.00", "Teller1"),
-        TransactionRowData("2024-04-10 10:30", "1409876536", "50,000.00", "", "Teller1")
+        TransactionRowData("2024-05-24 10:36", "2541367890", "1,204,169.00", "", "Teller1"),
+        TransactionRowData("2024-05-24 11:45", "2541367890", "", "250,000.00", "Teller1"),
+        TransactionRowData("2024-05-24 12:42", "2541367890", "", "550,000.00", "Teller1"),
+        TransactionRowData("2024-05-24 13:30", "2541367890", "1000,000.00", "", "Teller1")
     )
 
     // Calculate total credit and debit

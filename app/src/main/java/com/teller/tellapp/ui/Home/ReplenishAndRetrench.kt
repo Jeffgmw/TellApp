@@ -164,11 +164,11 @@ fun ActionDialog(
                     Button(
                         onClick = {
                             val referral = Referral(
-                                admin_id = 1, // Adjust based on your requirements
+                                admin_id = 1, // Adjust based on requirements
                                 amount = amountState.value.toDouble(),
                                 completed = false,
                                 destAcc = creditGlAccountState.value.toLong(),
-                                id = 0, // This might be auto-generated on the server
+                                id = 0, //  auto-generated on the server
                                 referralId = "",
                                 referralType = title,
                                 sourceAcc = debitGlAccountState.value.toLong()

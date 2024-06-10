@@ -1,4 +1,4 @@
-package com.teller.tellapp.ui.SrcHomeScreen
+package com.teller.tellapp.ui.ScreensFromHome
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -231,13 +231,13 @@ fun CustomerDetailsScreen(navController: NavController, searchQuery: String) {
                                             ) {
                                                 TableCell("Transaction ID", textColor, 100.dp, FontWeight.Bold)
                                                 TableCell("Amount", textColor, 70.dp, FontWeight.Bold)
-                                                TableCell("Date", textColor, 150.dp, FontWeight.Bold)
-                                                TableCell("Type", textColor, 70.dp, FontWeight.Bold)
                                                 TableCell("Currency", textColor, 70.dp, FontWeight.Bold)
+                                                TableCell("Type", textColor, 70.dp, FontWeight.Bold)
                                                 TableCell("Completed", textColor, 100.dp, FontWeight.Bold)
                                                 TableCell("Depositer", textColor, 70.dp, FontWeight.Bold)
                                                 TableCell("Depositer No", textColor, 100.dp, FontWeight.Bold)
                                                 TableCell("Depositer ID", textColor, 100.dp, FontWeight.Bold)
+                                                TableCell("Date", textColor, 150.dp, FontWeight.Bold)
                                             }
 
                                             account.transaction.forEach { transaction ->
@@ -248,13 +248,13 @@ fun CustomerDetailsScreen(navController: NavController, searchQuery: String) {
                                                 ) {
                                                     TableCell(transaction.transactionId.toString(), textColor, 100.dp)
                                                     TableCell(transaction.amount.toString(), textColor, 70.dp)
-                                                    TableCell(formatDateTime(transaction.date), textColor, 150.dp)
-                                                    TableCell(transaction.transactionType, textColor, 70.dp)
                                                     TableCell(transaction.currency ?: "NULL", textColor, 70.dp)
+                                                    TableCell(transaction.transactionType, textColor, 70.dp)
                                                     TableCell(transaction.completed.toString(), textColor, 100.dp)
                                                     TableCell(transaction.depositer ?: "NULL", textColor, 70.dp)
                                                     TableCell(transaction.depositerNo ?: "NULL", textColor, 100.dp)
                                                     TableCell(transaction.depositerId?.toString() ?: "NULL", textColor, 100.dp)
+                                                    TableCell(formatDateTime(transaction.date), textColor, 150.dp)
                                                 }
                                             }
                                         }
@@ -292,10 +292,12 @@ fun TableCell(text: String, textColor: Color, width: Dp, fontWeight: FontWeight 
 fun formatDateTime(dateString: String): String {
     return try {
         val originalFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-        val targetFormat = SimpleDateFormat("MMM dd, yyyy h:mm a", Locale.getDefault())
-        val date = originalFormat.parse(dateString)
+        val targetFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+        val date = targetFormat.parse(dateString)
         date?.let { targetFormat.format(it) } ?: dateString
     } catch (e: Exception) {
         dateString
     }
 }
+
+

@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.gson.JsonObject
 import com.teller.tellapp.R
-import com.teller.tellapp.Route
+import com.teller.tellapp.ui.navigation.Route
 import com.teller.tellapp.data.Trans
 import com.teller.tellapp.network.EntityResponse
 import com.teller.tellapp.network.RetrofitClient
@@ -143,7 +143,7 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String) {
                     modifier = Modifier.fillMaxWidth()
                         .height(60.dp)
                         .padding(start = 24.dp, end = 24.dp),
-                    enabled = index >= 0,  // Disable the first three text fields
+                    enabled = index >= 10,  // Disable text fields
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Color.DarkGray,
                         unfocusedBorderColor = Color.Gray,
@@ -174,7 +174,7 @@ fun EditScannedDataScreen(navController: NavController, qrCode: String) {
                     },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
                 ) {
-                    Text("Submit")
+                    Text("APPROVE")
                 }
             }
         }
